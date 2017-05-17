@@ -4,55 +4,27 @@ import (
     "os"
     "encoding/json"
     "io/ioutil"
-   // "github.com/hyperledger/fabric/core/ledger/statemgmt/state"
 	"strings"
 
-	"github.com/cryptographic-core/service"
+
+	"github.com/cryptographic-core/core"
  
 )
 
-type Jsonobject struct {
-    Jsonrpc	string		`json:"jsonrpc"`
-	Method	string		`json:"method"`
-	Params	ParamsType	`json:"params"`
-	Id	string			`json:"id"`
-}
-
-type ParamsType struct{
-	Type int						`json:"type"`
-	ChaincodeID 	ChaincodeIDType	`json:"chaincodeID"`
-	CtorMsg			CtorMsgType		`json:"ctorMsg"`
-}
-
-type ChaincodeIDType struct{
-	Name string			`json:"name"`
-	}
-
-type CtorMsgType struct {
-	Function string		`json:"function"`
-	Args []string		`json:"args"`
-}
 
 
 func readFile (fileName string){
+	fmt.Printf("readFile start\n")
+
 	file, e := ioutil.ReadFile(fileName)
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
 		os.Exit(1)
 	}
 
-	var jsontype []Jsonobject
+	var jsontype []*core.Jsonobject
 	json.Unmarshal(file, &jsontype)
-	/*state := state.NewState()
-
-	state.TxFinish("txID", true)*/
-
-	fmt.Printf("Results: %v\n", jsontype)
-	fmt.Printf("function: %v\n", jsontype[0].Params.CtorMsg.Function)
-	fmt.Printf("Args: %v\n", jsontype[0].Params.CtorMsg.Args[1])
-	data, _ := json.Marshal(jsontype)
-	service.PrintData(data)
-
+	core.AddData(jsontype)
 }
 
 func createBlock(){
@@ -82,7 +54,4 @@ func main(){
 	} else if strings.Compare(method,"t")==0 {
 		testBlock()
 	}
-	
-	/*fmt.Printf("Compare r %v\n",strings.Compare(os.Args[1],"r"))
-	fmt.Printf("Compare d %v\n",strings.Compare(os.Args[1],"d"))*/
 }
