@@ -1,5 +1,6 @@
 package core
 
+import google_protobuf "github.com/golang/protobuf/ptypes/timestamp"
 
 type Jsonobject struct {
     Jsonrpc	string		`json:"jsonrpc"`
@@ -21,4 +22,21 @@ type ChaincodeIDType struct{
 type CtorMsgType struct {
 	Function string		`json:"function"`
 	Args []string		`json:"args"`
+}
+
+type ConfidentialityLevel int32
+type Transaction_Type int32
+type Transaction struct{
+	Type Transaction_type
+	ChaincodeID 					[]byte
+	Payload 						[]byte
+	Metadata						[]byte
+	Txid							string
+	Timestamp						*google_protobuf.Timestamp
+	ConfidentialityLevel			ConfidentialityLevel       
+	ConfidentialityProtocolVersion	string                     
+	Nonce							[]byte                     
+	ToValidators					[]byte                     
+	Cert							[]byte                     
+	Signature						[]byte       	
 }

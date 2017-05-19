@@ -12,7 +12,6 @@ import (
 )
 
 
-
 func readFile (fileName string){
 	fmt.Printf("readFile start\n")
 
