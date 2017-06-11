@@ -99,6 +99,7 @@ func (config *config) getNumBuckets(level int) int {
 }
 
 func (config *config) computeBucketHash(data []byte) uint32 {
+	fmt.Printf("config data = %s\n", data)
 	return config.hashFunc(data)
 }
 
@@ -126,7 +127,9 @@ func (config *config) computeParentBucketNumber(bucketNumber int) int {
 type hashFunc func(data []byte) uint32
 
 func fnvHash(data []byte) uint32 {
+	fmt.Printf("fnvHash \n")
 	fnvHash := fnv.New32a()
 	fnvHash.Write(data)
+	fmt.Printf("fnvHash fnvHash = %s\n", fnvHash)
 	return fnvHash.Sum32()
 }

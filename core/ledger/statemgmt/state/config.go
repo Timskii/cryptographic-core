@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/spf13/viper"
+	//"github.com/spf13/viper"
 )
 
 var loadConfigOnce sync.Once
@@ -35,9 +35,9 @@ func initConfig() {
 
 func loadConfig() {
 	logger.Info("Loading configurations...")
-	stateImplName = stateImplType(viper.GetString("ledger.state.dataStructure.name"))
-	stateImplConfigs = viper.GetStringMap("ledger.state.dataStructure.configs")
-	deltaHistorySize = viper.GetInt("ledger.state.deltaHistorySize")
+	stateImplName = stateImplType("buckettree")//(viper.GetString("ledger.state.dataStructure.name"))
+	stateImplConfigs = map[string]interface {}{"numBuckets":1000003, "maxGroupingAtEachLevel":5, "bucketCacheSize":100}//viper.GetStringMap("ledger.state.dataStructure.configs")
+	deltaHistorySize = 500//viper.GetInt("ledger.state.deltaHistorySize")
 	logger.Infof("Configurations loaded. stateImplName=[%s], stateImplConfigs=%s, deltaHistorySize=[%d]",
 		stateImplName, stateImplConfigs, deltaHistorySize)
 

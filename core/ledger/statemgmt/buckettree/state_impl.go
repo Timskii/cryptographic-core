@@ -18,6 +18,7 @@ package buckettree
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/ledger/statemgmt"
@@ -65,6 +66,7 @@ func (stateImpl *StateImpl) Initialize(configs map[string]interface{}) error {
 
 // Get - method implementation for interface 'statemgmt.HashableState'
 func (stateImpl *StateImpl) Get(chaincodeID string, key string) ([]byte, error) {
+	fmt.Printf("GET chqincode = %s",chaincodeID)
 	dataKey := newDataKey(chaincodeID, key)
 	dataNode, err := fetchDataNodeFromDB(dataKey)
 	if err != nil {

@@ -26,8 +26,9 @@ type CtorMsgType struct {
 
 type ConfidentialityLevel int32
 type Transaction_Type int32
+
 type Transaction struct{
-	Type Transaction_type
+	Type Transaction_Type
 	ChaincodeID 					[]byte
 	Payload 						[]byte
 	Metadata						[]byte
@@ -39,4 +40,10 @@ type Transaction struct{
 	ToValidators					[]byte                     
 	Cert							[]byte                     
 	Signature						[]byte       	
+}
+
+
+type ChaincodeID struct {
+	Path string 
+	Name string
 }

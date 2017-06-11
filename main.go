@@ -7,7 +7,7 @@ import (
 	"strings"
 
 
-	"github.com/cryptographic-core/core"
+	"github.com/hyperledger/fabric/core"
  
 )
 

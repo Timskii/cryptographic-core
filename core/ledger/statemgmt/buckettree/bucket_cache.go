@@ -83,7 +83,8 @@ func (cache *bucketCache) loadAllBucketNodesFromDB() {
 		itr.Value().Free()
 		count++
 	}
-	logger.Infof("Loaded buckets data in cache. Total buckets in DB = [%d]. Total cache size:=%d", count, cache.size)
+	logger.Infof(
+		"Loaded buckets data in cache. Total buckets in DB = [%d]. Total cache size:=%d", count, cache.size)
 }
 
 func (cache *bucketCache) putWithoutLock(key bucketKey, node *bucketNode) {
