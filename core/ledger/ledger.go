@@ -32,6 +32,7 @@ import (
 
 	"github.com/hyperledger/fabric/protos"
 	"golang.org/x/net/context"
+	"github.com/hyperledger/fabric/util"		// tim
 )
 
 var ledgerLogger = logging.MustGetLogger("ledger")
@@ -160,6 +161,7 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 	defer writeBatch.Destroy()
 	block := protos.NewBlock(transactions, metadata)
 
+
 	ccEvents := []*protos.ChaincodeEvent{}
 
 	if transactionResults != nil {
@@ -185,6 +187,7 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 	//store chaincode events directly in NonHashData. This will likely change in New Consensus where we can move them to Transaction
 	block.NonHashData = &protos.NonHashData{ChaincodeEvents: ccEvents}
 	newBlockNumber, err := ledger.blockchain.addPersistenceChangesForNewBlock(context.TODO(), block, stateHash, writeBatch)
+
 	if err != nil {
 		ledger.resetForNextTxGroup(false)
 		ledger.blockchain.blockPersistenceStatus(false)
@@ -207,7 +210,7 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 
 	//send chaincode events from transaction results
 	sendChaincodeEvents(transactionResults)
-
+	util.PrintData([]byte(fmt.Sprintf("%+v\n", *block)))
 	if len(transactionResults) != 0 {
 		ledgerLogger.Debug("There were some erroneous transactions. We need to send a 'TX rejected' message here.")
 	}
@@ -275,6 +278,7 @@ func (ledger *Ledger) SetState(chaincodeID string, key string, value []byte) err
 		return newLedgerError(ErrorTypeInvalidArgument,
 			fmt.Sprintf("An empty string key or a nil value is not supported. Method invoked with key='%s', value='%#v'", key, value))
 	}
+	fmt.Printf("chaincodeID = %v\n key = %v\n value = %v\n ", chaincodeID, key, value)
 	return ledger.state.Set(chaincodeID, key, value)
 }
 

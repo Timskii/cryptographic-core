@@ -2,11 +2,15 @@ package core
 
 import google_protobuf "github.com/golang/protobuf/ptypes/timestamp"
 
+type Jsonobjects struct {
+	objects	[]Jsonobject
+}
+
 type Jsonobject struct {
     Jsonrpc	string		`json:"jsonrpc"`
 	Method	string		`json:"method"`
 	Params	ParamsType	`json:"params"`
-	Id	string			`json:"id"`
+	Id	int			`json:"id"`
 }
 
 type ParamsType struct{
