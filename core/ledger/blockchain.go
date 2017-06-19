@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"strconv"
+	"fmt"
 
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/util"
@@ -47,6 +48,7 @@ var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
 	size, err := fetchBlockchainSizeFromDB()
+	fmt.Printf("newBlockchain err: %v\n",err)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +56,12 @@ func newBlockchain() (*blockchain, error) {
 	blockchain.size = size
 	if size > 0 {
 		previousBlock, err := fetchBlockFromDB(size - 1)
+		fmt.Printf("fetchBlockFromDB err: %v\n",err)
 		if err != nil {
 			return nil, err
 		}
 		previousBlockHash, err := previousBlock.GetHash()
+		fmt.Printf("GetHash err: %v\n",err)
 		if err != nil {
 			return nil, err
 		}
@@ -265,6 +269,8 @@ func (blockchain *blockchain) persistRawBlock(block *protos.Block, blockNumber u
 
 func fetchBlockFromDB(blockNumber uint64) (*protos.Block, error) {
 	blockBytes, err := db.GetDBHandle().GetFromBlockchainCF(encodeBlockNumberDBKey(blockNumber))
+	fmt.Printf("fetchBlockFromDB blockBytes = %#v\n ",string(blockBytes))
+	fmt.Printf("fetchBlockFromDB err = %#v\n ",err)
 	if err != nil {
 		return nil, err
 	}
@@ -279,9 +285,10 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if bytes == nil {
+	if bytes == nil /*|| len(bytes) < 2 */{
 		return 0, nil
 	}
+	fmt.Printf("fetchBlockchainSizeFromDB bytes = %v\n len = %v \n",bytes, len(bytes))
 	return decodeToUint64(bytes), nil
 }
 
@@ -310,6 +317,7 @@ func encodeUint64(number uint64) []byte {
 }
 
 func decodeToUint64(bytes []byte) uint64 {
+		fmt.Printf("decodeToUint64 bytes = %v\n len = %v \n",string(bytes), len(bytes))
 	return binary.BigEndian.Uint64(bytes)
 }
 

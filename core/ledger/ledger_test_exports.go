@@ -24,10 +24,12 @@ import "fmt"
 func InitTestLedger() *Ledger {
 	//testDBWrapper.CleanDB(t)
 	_, err := GetLedger()
-	fmt.Printf("err %v", err )
+	fmt.Printf("\nInitTestLedger err %v\n", err )
 	//testutil.AssertNoError(t, err, "Error while constructing ledger")
 	newLedger, err := GetNewLedger()
 	//testutil.AssertNoError(t, err, "Error while constructing ledger")
 	ledger = newLedger
+	fmt.Printf("\nInitTestLedger newLedger %#v\n", newLedger )
+	fmt.Printf("\nInitTestLedger ledger %#v\n", ledger )
 	return newLedger
 }

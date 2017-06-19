@@ -2,6 +2,7 @@ package util
 
 import (
 		"os"
+		"strconv"
 		//"time"
 	)
 
@@ -14,4 +15,11 @@ func PrintData(data []byte){
 	defer file.Close()
 
 	_, _ = file.Write(data)
+}
+
+func GenerateKey(value *[]string) string {
+	var key string
+	args := *value
+	key = strconv.Itoa(len(args[0]))+args[0]+strconv.Itoa(len(args[1]))+args[1]
+	return key
 }

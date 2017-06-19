@@ -32,7 +32,7 @@ import (
 
 	"github.com/hyperledger/fabric/protos"
 	"golang.org/x/net/context"
-	"github.com/hyperledger/fabric/util"		// tim
+	//"github.com/hyperledger/fabric/util"		// tim
 )
 
 var ledgerLogger = logging.MustGetLogger("ledger")
@@ -210,7 +210,7 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 
 	//send chaincode events from transaction results
 	sendChaincodeEvents(transactionResults)
-	util.PrintData([]byte(fmt.Sprintf("%+v\n", *block)))
+	//util.PrintData([]byte(fmt.Sprintf("%+v\n", *block)))
 	if len(transactionResults) != 0 {
 		ledgerLogger.Debug("There were some erroneous transactions. We need to send a 'TX rejected' message here.")
 	}
@@ -478,6 +478,7 @@ func (ledger *Ledger) VerifyChain(highBlock, lowBlock uint64) (uint64, error) {
 }
 
 func (ledger *Ledger) checkValidIDBegin() error {
+	fmt.Printf("\n TIM checkValidIDBegin [%#v] ", ledger)
 	if ledger.currentID != nil {
 		return fmt.Errorf("Another TxGroup [%s] already in-progress", ledger.currentID)
 	}

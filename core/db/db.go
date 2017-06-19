@@ -179,12 +179,25 @@ func (openchainDB *OpenchainDB) DeleteState() error {
 // Get returns the valud for the given column family and key
 func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte) ([]byte, error) {
 
+	slice, _ := openchainDB.DB.GetCF( cfHandler, key)
+	fmt.Printf("Get slice %#v\n", slice)
+	if slice.Data() == nil {
+		return nil, nil
+	}
+	data := makeCopy(slice.Data())
+	fmt.Printf("openchainDB Get data %#v\n", data)
 	return nil, nil	// TIM get from file
 }
 
 // Put saves the key/value in the given column family
 func (openchainDB *OpenchainDB) Put(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte, value []byte) error {
-
+	fmt.Printf("Put key %#v\n", key)
+	fmt.Printf("Put value %#v\n", value)
+	err := openchainDB.DB.PutCF(cfHandler, key, value)
+	if err != nil {
+		dbLogger.Errorf("Error while trying to write key: %s", key)
+		return err
+	}
 	return nil
 }
 

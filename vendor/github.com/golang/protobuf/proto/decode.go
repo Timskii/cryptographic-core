@@ -300,6 +300,7 @@ type Unmarshaler interface {
 // existing data in pb is always removed. Use UnmarshalMerge
 // to preserve and append to existing data.
 func Unmarshal(buf []byte, pb Message) error {
+	fmt.Printf("proto Unmarshal: buf =%s", buf)
 	pb.Reset()
 	return UnmarshalMerge(buf, pb)
 }
@@ -312,9 +313,12 @@ func Unmarshal(buf []byte, pb Message) error {
 // Most code should use Unmarshal instead.
 func UnmarshalMerge(buf []byte, pb Message) error {
 	// If the object can unmarshal itself, let it.
+	fmt.Printf("\nproto UnmarshalMerge: buf =%s\n", buf)
 	if u, ok := pb.(Unmarshaler); ok {
+		fmt.Printf("proto u.Unmarshal(buf)\n")
 		return u.Unmarshal(buf)
 	}
+	fmt.Printf("NewBuffer(buf).Unmarshal(pb)\n")
 	return NewBuffer(buf).Unmarshal(pb)
 }
 
@@ -349,6 +353,7 @@ func (p *Buffer) Unmarshal(pb Message) error {
 	}
 
 	typ, base, err := getbase(pb)
+	fmt.Printf("proto Unmarshal typ %s\n base = %s\n",typ,base)
 	if err != nil {
 		return err
 	}
@@ -358,7 +363,7 @@ func (p *Buffer) Unmarshal(pb Message) error {
 	if collectStats {
 		stats.Decode++
 	}
-
+	fmt.Printf("proto Unmarshal err %s\n",err)
 	return err
 }
 
@@ -366,6 +371,9 @@ func (p *Buffer) Unmarshal(pb Message) error {
 func (o *Buffer) unmarshalType(st reflect.Type, prop *StructProperties, is_group bool, base structPointer) error {
 	var state errorState
 	required, reqFields := prop.reqCount, uint64(0)
+	fmt.Printf("proto unmarshalType len(o.buf) %v\n",len(o.buf))
+	fmt.Printf("proto unmarshalType o.buf %v\n",o.buf)
+	fmt.Printf("proto unmarshalType o.buf %v\n",string(o.buf))
 
 	var err error
 	for err == nil && o.index < len(o.buf) {
@@ -387,7 +395,9 @@ func (o *Buffer) unmarshalType(st reflect.Type, prop *StructProperties, is_group
 			}
 			return fmt.Errorf("proto: %s: wiretype end group for non-group", st)
 		}
+		fmt.Printf("proto unmarshalType u %v\n",u)
 		tag := int(u >> 3)
+		fmt.Printf("proto unmarshalType tag %v\n",tag)
 		if tag <= 0 {
 			return fmt.Errorf("proto: %s: illegal tag %d (wire type %d)", st, tag, wire)
 		}

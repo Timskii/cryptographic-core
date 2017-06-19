@@ -1,5 +1,16 @@
 package gorocksdb
 
+import(
+    "os"
+    "fmt"
+    "encoding/json"
+    "bytes"
+    "io/ioutil"
+
+
+    "github.com/hyperledger/fabric/util"
+    )
+
 
 // Range is a range of keys in the database. GetApproximateSizes calls with it
 // begin at the key Start and end right before the key Limit.
@@ -13,6 +24,10 @@ type DB struct {
 	name string
 }
 
+type DataJson struct {
+	Key 	[]byte
+	Value	[]byte
+}
 // OpenDb opens a database with the specified options.
 /*func OpenDb(opts *Options, name string) (*DB, error) {
 	var (
@@ -238,22 +253,48 @@ func (db *DB) GetBytes(opts *ReadOptions, key []byte) ([]byte, error) {
 	defer C.free(unsafe.Pointer(cValue))
 	return C.GoBytes(unsafe.Pointer(cValue), C.int(cValLen)), nil
 }
-
+*/
 // GetCF returns the data associated with the key from the database and column family.
-func (db *DB) GetCF(opts *ReadOptions, cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
+func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 	var (
-		cErr    *C.char
-		cValLen C.size_t
-		cKey    = byteToChar(key)
+		cValue  []byte
+		cValLen int
 	)
-	cValue := C.rocksdb_get_cf(db.c, opts.c, cf.c, cKey, C.size_t(len(key)), &cValLen, &cErr)
-	if cErr != nil {
+	l := []byte("[")
+	r := []byte("]")
+	file, e := ioutil.ReadFile("./db.txt")
+	if e != nil {
+		fmt.Printf("File error: %v\n", e)
+		os.Exit(1)
+	}
+	if len(file) < 2 {
+			return  NewSlice("cValues", 8), nil
+	}
+	file = file[:len(file)-1]
+	file = append(l,file...)
+	file = append(file, r...)
+	var jsontype []*DataJson
+	json.Unmarshal(file, &jsontype)
+
+	fmt.Printf("GetCF jsontype: %#v\n  file:%#v\n  ", jsontype, string(file))
+
+	for i:=0; i<len(jsontype); i++{
+		if bytes.Equal(key,jsontype[i].Key){
+			cValue = jsontype[i].Value
+			cValLen = i
+			break
+		}
+	}
+
+	//cValue := C.rocksdb_get_cf(db.c, opts.c, cf.c, cKey, C.size_t(len(key)), &cValLen, &cErr)
+	/*if cErr != nil {
 		defer C.free(unsafe.Pointer(cErr))
 		return nil, errors.New(C.GoString(cErr))
-	}
-	return NewSlice(cValue, cValLen), nil
+	}*/
+	fmt.Printf("GetCF cValLen: %#v\n  cValue:%#v\n  ", cValLen, cValue)
+	return NewSlice(string(cValue), cValLen), nil
 }
-
+/*
 // Put writes data associated with a key to the database.
 func (db *DB) Put(opts *WriteOptions, key, value []byte) error {
 	var (
@@ -268,10 +309,15 @@ func (db *DB) Put(opts *WriteOptions, key, value []byte) error {
 	}
 	return nil
 }
-
+*/
 // PutCF writes data associated with a key to the database and column family.
-func (db *DB) PutCF(opts *WriteOptions, cf *ColumnFamilyHandle, key, value []byte) error {
-	var (
+func (db *DB) PutCF(cf *ColumnFamilyHandle, key, value []byte) error {
+	fmt.Printf("PutCF key: %#v\n  value:%#v\n  ", key, value)
+	var dataJson DataJson
+	dataJson.Key = key
+	dataJson.Value = value
+	util.PrintData([]byte(fmt.Sprintf("%+v\n", dataJson)))
+	/*var (
 		cErr   *C.char
 		cKey   = byteToChar(key)
 		cValue = byteToChar(value)
@@ -280,10 +326,11 @@ func (db *DB) PutCF(opts *WriteOptions, cf *ColumnFamilyHandle, key, value []byt
 	if cErr != nil {
 		defer C.free(unsafe.Pointer(cErr))
 		return errors.New(C.GoString(cErr))
-	}
+	}*/
+
 	return nil
 }
-
+/*
 // Delete removes the data associated with the key from the database.
 func (db *DB) Delete(opts *WriteOptions, key []byte) error {
 	var (
@@ -345,7 +392,7 @@ func (db *DB) MergeCF(opts *WriteOptions, cf *ColumnFamilyHandle, key []byte, va
 
 // Write writes a WriteBatch to the database
 func (db *DB) Write(opts *WriteOptions, batch *WriteBatch) error {
-
+	fmt.Printf("Write  batch %#v ", *batch)
 	return nil
 }
 

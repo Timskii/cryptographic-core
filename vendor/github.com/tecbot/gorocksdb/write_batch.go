@@ -2,6 +2,8 @@ package gorocksdb
 
 import "io"
 import "fmt"
+import "encoding/json"
+import "github.com/hyperledger/fabric/util"
 
 // WriteBatch is a batching of Puts, Merges and Deletes.
 type WriteBatch struct {
@@ -27,7 +29,15 @@ func (wb *WriteBatch) Put(key, value []byte) {
 
 // PutCF queues a key-value pair in a column family.
 func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
-	fmt.Printf("PutCF \n")
+	fmt.Printf("\nWriteBatch PutCF value:%#v \n WriteBatch PutCF key:%#v \n",string(value),key)
+	dataJson := new(DataJson)
+	dataJson.Key = key
+	dataJson.Value = value
+	data ,_ := json.Marshal(dataJson)
+	fmt.Printf("\nWriteBatch PutCF dataJson:%#v \n ",*dataJson)
+	fmt.Printf("\nWriteBatch PutCF data:%#v \n ", string(data))
+	data = append(data,[]byte(",")...)
+	util.PrintData(data)
 }
 
 // Merge queues a merge of "value" with the existing value of "key".
