@@ -32,7 +32,7 @@ import (
 
 	"github.com/hyperledger/fabric/protos"
 	"golang.org/x/net/context"
-	//"github.com/hyperledger/fabric/util"		// tim
+	"github.com/hyperledger/fabric/util"		// tim
 )
 
 var ledgerLogger = logging.MustGetLogger("ledger")
@@ -210,7 +210,9 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 
 	//send chaincode events from transaction results
 	sendChaincodeEvents(transactionResults)
+
 	//util.PrintData([]byte(fmt.Sprintf("%+v\n", *block)))
+	util.PrintDataBlock(*block)
 	if len(transactionResults) != 0 {
 		ledgerLogger.Debug("There were some erroneous transactions. We need to send a 'TX rejected' message here.")
 	}
@@ -503,7 +505,10 @@ func sendProducerBlockEvent(block *protos.Block) {
 	// Remove payload from deploy transactions. This is done to make block
 	// events more lightweight as the payload for these types of transactions
 	// can be very large.
+
 	blockTransactions := block.GetTransactions()
+	fmt.Printf("\nsendProducerBlockEvent block:%+v\n",block)
+	fmt.Printf("\nsendProducerBlockEvent blockTransactions:%+v\n",blockTransactions)
 	for _, transaction := range blockTransactions {
 		if transaction.Type == protos.Transaction_CHAINCODE_DEPLOY {
 			deploymentSpec := &protos.ChaincodeDeploymentSpec{}

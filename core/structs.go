@@ -1,6 +1,8 @@
 package core
 
-import google_protobuf "github.com/golang/protobuf/ptypes/timestamp"
+import (
+			google_protobuf "github.com/golang/protobuf/ptypes/timestamp"
+		)
 
 type Jsonobjects struct {
 	objects	[]Jsonobject
@@ -51,4 +53,5 @@ type ChaincodeID struct {
 	Path string 
 	Name string
 }
+
 

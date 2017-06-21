@@ -47,6 +47,7 @@ type lastProcessedBlock struct {
 var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
+	fmt.Printf("\n newBlockchain ")
 	size, err := fetchBlockchainSizeFromDB()
 	fmt.Printf("newBlockchain err: %v\n",err)
 	if err != nil {
