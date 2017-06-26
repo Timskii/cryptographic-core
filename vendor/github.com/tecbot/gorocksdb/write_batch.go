@@ -29,14 +29,15 @@ func (wb *WriteBatch) Put(key, value []byte) {
 
 // PutCF queues a key-value pair in a column family.
 func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
-	fmt.Printf("\nWriteBatch PutCF value:%#v \n WriteBatch PutCF key:%#v \n",string(value),key)
+	fmt.Printf("\nWriteBatch PutCF value:%#v \n WriteBatch PutCF key:%#v \n",string(value),string(key))
 	dataJson := new(DataJson)
 	dataJson.Key = key
 	dataJson.Value = value
 	data ,_ := json.Marshal(dataJson)
 	fmt.Printf("\nWriteBatch PutCF dataJson:%#v \n ",*dataJson)
+	fmt.Printf("\nWriteBatch PutCF dataJson:%#v \n ",dataJson.Value)
 	fmt.Printf("\nWriteBatch PutCF data:%#v \n ", string(data))
-	data = append(data,[]byte(",")...)
+	//data = append(data,[]byte(",\n")...)
 	util.PrintData(data)
 }
 

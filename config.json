@@ -12,50 +12,5 @@
     }
   },
   "id" : 1
-},
-{
-  "jsonrpc" : "2.0",
-  "method" : "invoke",
-  "params" : {
-    "type" : 1,
-    "chaincodeID" : {
-      "name" : "8cbbbd9fecabd2833d5ca36b59b0b3e72da4b7240f0a3c1541b296f709d3374697d83c02504373a5f1d3d30bd1afb6c27033622eddd0bf68762573a7fe32f0c2"
-    },
-    "ctorMsg" : {
-      "function" : "transfer",
-      "args" : [ "TEST12", "test12", "test1112" ,"2" ]
-    }
-  },
-  "id" : 2
-},
-{
-  "jsonrpc" : "2.0",
-  "method" : "invoke",
-  "params" : {
-    "type" : 1,
-    "chaincodeID" : {
-      "name" : "8cbbbd9fecabd2833d5ca36b59b0b3e72da4b7240f0a3c1541b296f709d3374697d83c02504373a5f1d3d30bd1afb6c27033622eddd0bf68762573a7fe32f0c2"
-    },
-    "ctorMsg" : {
-      "function" : "transfer",
-      "args" : [ "TEST12", "test13", "test1113" ,"3" ]
-    }
-  },
-  "id" : 3
-},
-{
-  "jsonrpc" : "2.0",
-  "method" : "invoke",
-  "params" : {
-    "type" : 1,
-    "chaincodeID" : {
-      "name" : "8cbbbd9fecabd2833d5ca36b59b0b3e72da4b7240f0a3c1541b296f709d3374697d83c02504373a5f1d3d30bd1afb6c27033622eddd0bf68762573a7fe32f0c2"
-    },
-    "ctorMsg" : {
-      "function" : "transfer",
-      "args" : [ "TEST12", "test14", "test1114" ,"4" ]
-    }
-  },
-  "id" : 4
 }
 ]

@@ -42,6 +42,7 @@ func fetchDataNodeFromDB(dataKey *dataKey) (*dataNode, error) {
 func fetchBucketNodeFromDB(bucketKey *bucketKey) (*bucketNode, error) {
 	openchainDB := db.GetDBHandle()
 	nodeBytes, err := openchainDB.GetFromStateCF(bucketKey.getEncodedBytes())
+	logger.Debugf("Fetching from DB data nodes nodeBytes [%+v]", string(nodeBytes))
 	if err != nil {
 		return nil, err
 	}

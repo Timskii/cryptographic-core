@@ -9,7 +9,9 @@ import(
 
 
     "github.com/hyperledger/fabric/util"
-    )
+
+	"strings"
+)
 
 
 // Range is a range of keys in the database. GetApproximateSizes calls with it
@@ -260,25 +262,26 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 		cValue  []byte
 		cValLen int
 	)
-	l := []byte("[")
-	r := []byte("]")
-	file, e := ioutil.ReadFile("./db.txt")
+
+	file, e := ioutil.ReadFile("github.com/hyperledger/fabric/db.txt")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
 		os.Exit(1)
 	}
-	if len(file) < 2 {
+	/*if len(file) < 2 {
 			return  NewSlice("cValues", 8), nil
-	}
-	file = file[:len(file)-1]
-	file = append(l,file...)
-	file = append(file, r...)
-	var jsontype []*DataJson
-	json.Unmarshal(file, &jsontype)
+	}*/
+	fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
+	fileS = strings.Replace(fileS,"}{","},{",-1)
 
-	fmt.Printf("GetCF jsontype: %#v\n  file:%#v\n  ", jsontype, string(file))
+	var jsontype []*DataJson
+	json.Unmarshal([]byte(fileS), &jsontype)
+
+	fmt.Printf("GetCF jsontype: %+v\n  file:%#v\n  ", jsontype, string(file))
+	fmt.Printf("GetCF key: %+v\n  ", string(key))
 
 	for i:=0; i<len(jsontype); i++{
+		fmt.Printf("GetCF jsontype: %+v\n  ", string(jsontype[i].Value))
 		if bytes.Equal(key,jsontype[i].Key){
 			cValue = jsontype[i].Value
 			cValLen = i
@@ -317,17 +320,6 @@ func (db *DB) PutCF(cf *ColumnFamilyHandle, key, value []byte) error {
 	dataJson.Key = key
 	dataJson.Value = value
 	util.PrintData([]byte(fmt.Sprintf("%+v\n", dataJson)))
-	/*var (
-		cErr   *C.char
-		cKey   = byteToChar(key)
-		cValue = byteToChar(value)
-	)
-	C.rocksdb_put_cf(db.c, opts.c, cf.c, cKey, C.size_t(len(key)), cValue, C.size_t(len(value)), &cErr)
-	if cErr != nil {
-		defer C.free(unsafe.Pointer(cErr))
-		return errors.New(C.GoString(cErr))
-	}*/
-
 	return nil
 }
 /*

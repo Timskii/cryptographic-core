@@ -186,7 +186,10 @@ func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key
 	}
 	data := makeCopy(slice.Data())
 	fmt.Printf("openchainDB Get data %#v\n", data)
-	return nil, nil	// TIM get from file
+	if len(data) < 2 {
+		return nil,nil
+	}
+	return data, nil	// TIM get from file
 }
 
 // Put saves the key/value in the given column family

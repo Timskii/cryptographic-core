@@ -246,6 +246,7 @@ func (stateImpl *StateImpl) addDataNodeChangesForPersistence(writeBatch *gorocks
 				writeBatch.DeleteCF(openchainDB.StateCF, dataNode.dataKey.getEncodedBytes())
 			} else {
 				logger.Debugf("Adding data node with value = %#v", dataNode.value)
+				fmt.Printf("State_impl addDataNodeChangesForPersistence value = %#v", dataNode.value)
 				writeBatch.PutCF(openchainDB.StateCF, dataNode.dataKey.getEncodedBytes(), dataNode.value)
 			}
 		}
@@ -261,6 +262,7 @@ func (stateImpl *StateImpl) addBucketNodeChangesForPersistence(writeBatch *goroc
 			if bucketNode.markedForDeletion {
 				writeBatch.DeleteCF(openchainDB.StateCF, bucketNode.bucketKey.getEncodedBytes())
 			} else {
+				fmt.Printf("State_impl addDataNodeChangesForPersistence value = %#v", bucketNode)
 				writeBatch.PutCF(openchainDB.StateCF, bucketNode.bucketKey.getEncodedBytes(), bucketNode.marshal())
 			}
 		}

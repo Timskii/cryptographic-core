@@ -298,7 +298,8 @@ func (state *State) AddChangesForPersistence(blockNumber uint64, writeBatch *gor
 
 	serializedStateDelta := state.stateDelta.Marshal()
 	cf := db.GetDBHandle().StateDeltaCF
-	logger.Debugf("Adding state-delta corresponding to block number[%d]", blockNumber)
+	logger.Debugf("\nAdding state-delta corresponding to block number[%d]", blockNumber)
+	fmt.Printf("\n State.go AddChangesForPersistence Adding state-delta serializedStateDelta[%#v]\n", string(serializedStateDelta))
 	writeBatch.PutCF(cf, encodeStateDeltaKey(blockNumber), serializedStateDelta)
 	if blockNumber >= state.historyStateDeltaSize {
 		blockNumberToDelete := blockNumber - state.historyStateDeltaSize

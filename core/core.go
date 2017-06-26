@@ -17,8 +17,9 @@ func AddData (jsonobject []*Jsonobject){
 	fmt.Printf("AddData \n")
 
 	transactions := []*protos.Transaction{}
-
-	ledger1 := ledger.InitTestLedger()
+	fmt.Println("\n\n------------InitTestLedger --------------")
+	ledger1,_ := ledger.GetLedger() //ledger.InitTestLedger()
+	fmt.Println("\n\n------------InitTestLedger --------------")
 	if ledger1.GetBlockchainSize() == 0 {
 		if makeGenesisError := ledger1.BeginTxBatch(0); makeGenesisError == nil {
 			makeGenesisError := ledger1.CommitTxBatch(0, nil, nil, nil)
@@ -43,7 +44,7 @@ func AddData (jsonobject []*Jsonobject){
 			ledger1.TxBegin(transaction.Txid)
 		//} 
 
-		ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]+args[3]))
+ 		ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]+args[3]))
 		
 		transactions = append(transactions,transaction)
 		//transactions[0] = transaction

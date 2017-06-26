@@ -20,13 +20,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/golang/protobuf/proto"
+	//"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/util"
 )
 
 // Bytes returns this transaction as an array of bytes.
 func (transaction *Transaction) Bytes() ([]byte, error) {
-	data, err := proto.Marshal(transaction)
+	data, err := json.Marshal(transaction)
 	if err != nil {
 		logger.Errorf("Error marshalling transaction: %s", err)
 		return nil, fmt.Errorf("Could not marshal transaction: %s", err)
@@ -39,7 +39,7 @@ func (transaction *Transaction) Bytes() ([]byte, error) {
 // string. The arguments could be a string of JSON, but there is no strict
 // requirement.
 func NewTransaction(chaincodeID ChaincodeID, uuid string, function string, arguments []string) (*Transaction, error) {
-	data, err := proto.Marshal(&chaincodeID)
+	data, err := json.Marshal(&chaincodeID)
 	if err != nil {
 		return nil, fmt.Errorf("Could not marshal chaincode : %s", err)
 	}
@@ -72,7 +72,7 @@ func NewChaincodeDeployTransaction(chaincodeDeploymentSpec *ChaincodeDeploymentS
 	transaction.Timestamp = util.CreateUtcTimestamp()
 	cID := chaincodeDeploymentSpec.ChaincodeSpec.GetChaincodeID()
 	if cID != nil {
-		data, err := proto.Marshal(cID)
+		data, err := json.Marshal(cID)
 		if err != nil {
 			return nil, fmt.Errorf("Could not marshal chaincode : %s", err)
 		}
@@ -82,7 +82,7 @@ func NewChaincodeDeployTransaction(chaincodeDeploymentSpec *ChaincodeDeploymentS
 	//	transaction.Function = chaincodeDeploymentSpec.ChaincodeSpec.GetCtorMsg().Function
 	//	transaction.Args = chaincodeDeploymentSpec.ChaincodeSpec.GetCtorMsg().Args
 	//}
-	data, err := proto.Marshal(chaincodeDeploymentSpec)
+	data, err := json.Marshal(chaincodeDeploymentSpec)
 	if err != nil {
 		logger.Errorf("Error mashalling payload for chaincode deployment: %s", err)
 		return nil, fmt.Errorf("Could not marshal payload for chaincode deployment: %s", err)
@@ -99,13 +99,13 @@ func NewChaincodeExecute(chaincodeInvocationSpec *ChaincodeInvocationSpec, uuid 
 	transaction.Timestamp = util.CreateUtcTimestamp()
 	cID := chaincodeInvocationSpec.ChaincodeSpec.GetChaincodeID()
 	if cID != nil {
-		data, err := proto.Marshal(cID)
+		data, err := json.Marshal(cID)
 		if err != nil {
 			return nil, fmt.Errorf("Could not marshal chaincode : %s", err)
 		}
 		transaction.ChaincodeID = data
 	}
-	data, err := proto.Marshal(chaincodeInvocationSpec)
+	data, err := json.Marshal(chaincodeInvocationSpec)
 	if err != nil {
 		return nil, fmt.Errorf("Could not marshal payload for chaincode invocation: %s", err)
 	}

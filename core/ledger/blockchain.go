@@ -58,6 +58,7 @@ func newBlockchain() (*blockchain, error) {
 	if size > 0 {
 		previousBlock, err := fetchBlockFromDB(size - 1)
 		fmt.Printf("fetchBlockFromDB err: %v\n",err)
+		fmt.Printf("fetchBlockFromDB previousBlock: %v\n",previousBlock)
 		if err != nil {
 			return nil, err
 		}
@@ -209,6 +210,7 @@ func (blockchain *blockchain) addPersistenceChangesForNewBlock(ctx context.Conte
 	if blockBytesErr != nil {
 		return 0, blockBytesErr
 	}
+	fmt.Printf("\n blockchain.go addPersistenceChangesForNewBlock blockBytes = [%#v]\n", string(blockBytes))
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, encodeBlockNumberDBKey(blockNumber), blockBytes)
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, blockCountKey, encodeUint64(blockNumber+1))
 	if blockchain.indexer.isSynchronous() {
@@ -286,7 +288,7 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if bytes == nil /*|| len(bytes) < 2 */{
+	if bytes == nil || len(bytes) < 2 {
 		return 0, nil
 	}
 	fmt.Printf("fetchBlockchainSizeFromDB bytes = %v\n len = %v \n",bytes, len(bytes))

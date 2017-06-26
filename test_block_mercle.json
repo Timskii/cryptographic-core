@@ -4,14 +4,14 @@
 				"transactions":[
 								{	"chaincodeID":"EoABOGNiYmJkOWZlY2FiZDI4MzNkNWNhMzZiNTliMGIzZTcyZGE0YjcyNDBmMGEzYzE1NDFiMjk2ZjcwOWQzMzc0Njk3ZDgzYzAyNTA0MzczYTVmMWQzZDMwYmQxYWZiNmMyNzAzMzYyMmVkZGQwYmY2ODc2MjU3M2E3ZmUzMmYwYzI=",
 									"txid":"9a09a525-f036-4f22-87b9-159a7ee1a9a3",
-									"payload":"84e746bc12e0eaaf6a5962f922b031ea003e1ea2977e578335d881bed5302f837191d3820eea0b6be4ab994627a6b4454b4559deb29a358d88fb71f3ba8c04baregisterTESTTESTTESTTETStesttesttetst131000000"
+									"payload":"84e746bc12e0eaaf6a5962f922b031ea003e1ea2977e578335d881bed5302f837191d3820eea0b6be4ab994627a6b4454b4559deb29a358d88fb71f3ba8c04baregisterTESTTESTTESTTETStesttesttetst131000000",
 									"timestamp":{"seconds":1497965943,"nanos":745429100}}
 							],
 				"stateHash":"H97EApkoaTWuX9Ti0rVZuqYj/gMO0JYmbwa87pr021XmC+F7L3qkoevjtOFMSIP3LXrKnw49/mnMPhNdmrOjOg==",
 				"previousBlockHash":"RrndKwuojRMjOz/rdD7rJD/NUupiuBuCtQwnZG7Vdi/XXcTd2MDyAMsFAZ1ntZL2/IIcSUeatIZAKS6ss7fEvg==",
 				"consensusMetadata":"ZHVtbXktcHJvb2Y=",
 				"nonHashData":{"localLedgerCommitTimestamp":{"seconds":1497965943,"nanos":755931200}}
-				}
+				},
 	"mercleTree":[
 					{"level": 1,"hashes":["hash001", "hash002", "hash003", "hash004"]},
 					{"level": 2,"hashes":["hash005", "hash006"]},

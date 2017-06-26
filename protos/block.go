@@ -18,8 +18,9 @@ package protos
 
 import (
 	"fmt"
+	"encoding/json"
 
-	"github.com/golang/protobuf/proto"
+	//"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/util"
 )
 
@@ -42,7 +43,12 @@ import (
 
 // Bytes returns this block as an array of bytes.
 func (block *Block) Bytes() ([]byte, error) {
-	data, err := proto.Marshal(block)
+
+	fmt.Printf("\n Block Bytes Block : %s\n", block)
+
+	data, err := json.Marshal(block)
+	//data, err := proto.Marshal(block)
+	fmt.Printf("\n Block Bytes data : %s\n", data)
 	if err != nil {
 		logger.Errorf("Error marshalling block: %s", err)
 		return nil, fmt.Errorf("Could not marshal block: %s", err)
@@ -73,7 +79,8 @@ func (block *Block) GetHash() ([]byte, error) {
 	blockCopy.NonHashData = nil
 
 	// Hash the block
-	data, err := proto.Marshal(blockCopy)
+	data, err := json.Marshal(blockCopy)
+	//data, err := proto.Marshal(blockCopy)
 	if err != nil {
 		return nil, fmt.Errorf("Could not calculate hash of block: %s", err)
 	}
@@ -98,10 +105,11 @@ func (block *Block) SetPreviousBlockHash(previousBlockHash []byte) {
 func UnmarshallBlock(blockBytes []byte) (*Block, error) {
 	block := &Block{}
 	fmt.Printf("UnmarshallBlock: %s", blockBytes)
-	err := proto.Unmarshal(blockBytes, block)
-	if err != nil {
+	//err := proto.Unmarshal(blockBytes, block)
+	json.Unmarshal(blockBytes, &block)
+	/*if err != nil {
 		logger.Errorf("UnmarshallBlock Error unmarshalling block: %s", err)
 		return nil, fmt.Errorf("Could not unmarshal block: %s", err)
-	}
+	}*/
 	return block, nil
 }
