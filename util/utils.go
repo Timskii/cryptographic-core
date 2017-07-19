@@ -19,7 +19,7 @@ type BlockDb struct {
 
 func PrintData(data []byte){
 	//dat := time.Now()
-	filename := "github.com/hyperledger/fabric/db" //dat.Format("20060102")
+	filename := "db"//"github.com/hyperledger/fabric/db" //dat.Format("20060102")
 
 	file, _ := os.OpenFile(filename+".txt",os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	defer file.Close()
@@ -29,7 +29,7 @@ func PrintData(data []byte){
 
 func PrintDataBlock(block protos.Block){
 	//dat := time.Now()
-	filename := "github.com/hyperledger/fabric/db_blocks" //dat.Format("20060102")
+	filename :="db_blocks"  //"github.com/hyperledger/fabric/db_blocks" //dat.Format("20060102")
 	var blockDb BlockDb
 	blockDb.Height = 1
 	blockDb.Block = block

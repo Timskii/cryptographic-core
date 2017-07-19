@@ -71,7 +71,7 @@ func (cache *bucketCache) loadAllBucketNodesFromDB() {
 		}
 		bKey := decodeBucketKey(statemgmt.Copy(itr.Key().Data()))
 		nodeBytes := statemgmt.Copy(itr.Value().Data())
-		bucketNode := unmarshalBucketNode(&bKey, nodeBytes)
+		bucketNode :=  unmarshalBucketNode(&bKey, nodeBytes)
 		size := bKey.size() + bucketNode.size()
 		cache.size += size
 		if cache.size >= cache.maxSize {

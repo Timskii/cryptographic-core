@@ -47,23 +47,26 @@ type lastProcessedBlock struct {
 var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
-	fmt.Printf("\n newBlockchain ")
+	fmt.Printf("\nblockchqin.go  newBlockchain ")
 	size, err := fetchBlockchainSizeFromDB()
-	fmt.Printf("newBlockchain err: %v\n",err)
+	fmt.Printf("\nblockchqin.go  newBlockchain err: %v\n",err)
+	fmt.Printf("\nblockchqin.go  newBlockchain size: %v\n",size)
 	if err != nil {
 		return nil, err
 	}
 	blockchain := &blockchain{0, nil, nil, nil}
 	blockchain.size = size
 	if size > 0 {
-		previousBlock, err := fetchBlockFromDB(size - 1)
-		fmt.Printf("fetchBlockFromDB err: %v\n",err)
-		fmt.Printf("fetchBlockFromDB previousBlock: %v\n",previousBlock)
+		previousBlock, err := fetchBlockFromDB(size-1)
+		fmt.Printf("blockchqin.go newBlockchain fetchBlockFromDB err: %v\n",err)
+		fmt.Printf("blockchqin.go newBlockchain fetchBlockFromDB previousBlock: %#v\n",previousBlock)
 		if err != nil {
 			return nil, err
 		}
 		previousBlockHash, err := previousBlock.GetHash()
-		fmt.Printf("GetHash err: %v\n",err)
+		fmt.Printf("\nblockchqin.go GetHash err: %v\n",err)
+		fmt.Printf("blockchqin.go previousBlockHash : %s\n",previousBlockHash)
+		fmt.Printf("blockchqin.go previousBlockHash : %#v\n",previousBlockHash)
 		if err != nil {
 			return nil, err
 		}
@@ -210,7 +213,7 @@ func (blockchain *blockchain) addPersistenceChangesForNewBlock(ctx context.Conte
 	if blockBytesErr != nil {
 		return 0, blockBytesErr
 	}
-	fmt.Printf("\n blockchain.go addPersistenceChangesForNewBlock blockBytes = [%#v]\n", string(blockBytes))
+	fmt.Printf("\nblockchain.go addPersistenceChangesForNewBlock blockBytes = [%#v]\n", string(blockBytes))
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, encodeBlockNumberDBKey(blockNumber), blockBytes)
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, blockCountKey, encodeUint64(blockNumber+1))
 	if blockchain.indexer.isSynchronous() {
@@ -222,7 +225,9 @@ func (blockchain *blockchain) addPersistenceChangesForNewBlock(ctx context.Conte
 
 func (blockchain *blockchain) blockPersistenceStatus(success bool) {
 	if success {
+
 		blockchain.size++
+		fmt.Printf("blockPersistenceStatus blockchain.size:[%v]",blockchain.size)
 		blockchain.previousBlockHash = blockchain.lastProcessedBlock.blockHash
 		if !blockchain.indexer.isSynchronous() {
 			writeBatch := gorocksdb.NewWriteBatch()
@@ -272,8 +277,8 @@ func (blockchain *blockchain) persistRawBlock(block *protos.Block, blockNumber u
 
 func fetchBlockFromDB(blockNumber uint64) (*protos.Block, error) {
 	blockBytes, err := db.GetDBHandle().GetFromBlockchainCF(encodeBlockNumberDBKey(blockNumber))
-	fmt.Printf("fetchBlockFromDB blockBytes = %#v\n ",string(blockBytes))
-	fmt.Printf("fetchBlockFromDB err = %#v\n ",err)
+	fmt.Printf("blockchqin.go fetchBlockFromDB blockBytes = %#v\n",string(blockBytes))
+	fmt.Printf("blockchqin.go fetchBlockFromDB err = %#v\n",err)
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +296,7 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if bytes == nil || len(bytes) < 2 {
 		return 0, nil
 	}
-	fmt.Printf("fetchBlockchainSizeFromDB bytes = %v\n len = %v \n",bytes, len(bytes))
+	fmt.Printf("blockchqin.go fetchBlockchainSizeFromDB bytes = %v \nblockchqin.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))
 	return decodeToUint64(bytes), nil
 }
 
@@ -316,11 +321,13 @@ func encodeBlockNumberDBKey(blockNumber uint64) []byte {
 func encodeUint64(number uint64) []byte {
 	bytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(bytes, number)
+	fmt.Printf("\nblockchain.go encodeUnit64 bytes = [%s]\n",bytes)
+	fmt.Printf("\nblockchain.go encodeUnit64 bytes = [%#v]\n",bytes)
 	return bytes
 }
 
 func decodeToUint64(bytes []byte) uint64 {
-		fmt.Printf("decodeToUint64 bytes = %v\n len = %v \n",string(bytes), len(bytes))
+		fmt.Printf("blockchqin.go decodeToUint64 bytes = [%v] str=[%v] \nblockchqin.go decodeToUint64 len = %v \n",bytes,string(bytes),len(bytes))
 	return binary.BigEndian.Uint64(bytes)
 }
 

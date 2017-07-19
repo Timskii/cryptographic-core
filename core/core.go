@@ -31,31 +31,28 @@ func AddData (jsonobject []*Jsonobject){
 		ledger1.BeginTxBatch(1)
 		args := jsonobject[i].Params.CtorMsg.Args
 		fmt.Println("\n\n------------transaction --------------")
-		fmt.Printf("jsonobject: %+v\n", jsonobject[i])
-		transaction, err := protos.NewTransaction(	protos.ChaincodeID{Name: jsonobject[i].Params.ChaincodeID.Name}, 
-													ut.GenerateUUID(), 
-													jsonobject[i].Params.CtorMsg.Function, 
-													args)
+		fmt.Printf("\ncore.go jsonobject: %+v\n", jsonobject[i])
+		var t protos.Transaction_Type
+		t = protos.Transaction_CHAINCODE_INVOKE
+
+		transaction, err := protos.NewChaincodeExecute(
+			&protos.ChaincodeInvocationSpec{
+					ChaincodeSpec: &protos.ChaincodeSpec{
+												CtorMsg: &protos.ChaincodeInput{
+														Args: ut.ToChaincodeArgs(args[0],args[1],args[2],args[3])},
+												ChaincodeID : &protos.ChaincodeID{Name: jsonobject[i].Params.ChaincodeID.Name},
+																}},
+			ut.GenerateUUID(),
+			t)
 		if err != nil {
 			fmt.Printf("Error creating NewTransaction: %s", err)
 		}
-
-		//if i == 0 {
-			ledger1.TxBegin(transaction.Txid)
-		//} 
-
+		ledger1.TxBegin(transaction.Txid)
  		ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]+args[3]))
-		
 		transactions = append(transactions,transaction)
-		//transactions[0] = transaction
-		//if i == len(jsonobject)-1 {
-			ledger1.TxFinished(transactions[i].Txid, true)
-		//}
+		ledger1.TxFinished(transactions[i].Txid, true)
 		ledger1.CommitTxBatch(1, transactions, nil, []byte("dummy-proof"))	//COMN
 	}	
-
-	
-	
 
 	fmt.Println((fmt.Sprintf("%+v\n", transactions)))
 }

@@ -29,40 +29,38 @@ func (wb *WriteBatch) Put(key, value []byte) {
 
 // PutCF queues a key-value pair in a column family.
 func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
-	fmt.Printf("\nWriteBatch PutCF value:%#v \n WriteBatch PutCF key:%#v \n",string(value),string(key))
+	fmt.Printf("\nWriteBatch PutCF value:%#v \nWriteBatch PutCF key:%#v \n",string(value),string(key))
 	dataJson := new(DataJson)
 	dataJson.Key = key
 	dataJson.Value = value
 	data ,_ := json.Marshal(dataJson)
-	fmt.Printf("\nWriteBatch PutCF dataJson:%#v \n ",*dataJson)
-	fmt.Printf("\nWriteBatch PutCF dataJson:%#v \n ",dataJson.Value)
-	fmt.Printf("\nWriteBatch PutCF data:%#v \n ", string(data))
+	fmt.Printf("WriteBatch PutCF data:%#v \n", string(data))
 	//data = append(data,[]byte(",\n")...)
 	util.PrintData(data)
 }
 
 // Merge queues a merge of "value" with the existing value of "key".
 func (wb *WriteBatch) Merge(key, value []byte) {
-	fmt.Printf("Merge \n")
+	fmt.Printf("gorocksdb/writeBatch Merge \n")
 }
 
 // MergeCF queues a merge of "value" with the existing value of "key" in a
 // column family.
 func (wb *WriteBatch) MergeCF(cf *ColumnFamilyHandle, key, value []byte) {
 
-	fmt.Printf("MergeCF \n")
+	fmt.Printf("gorocksdb/writeBatch MergeCF \n")
 }
 
 // Delete queues a deletion of the data at key.
 func (wb *WriteBatch) Delete(key []byte) {
 
-	fmt.Printf("Delete \n")
+	fmt.Printf("gorocksdb/writeBatch Delete \n")
 }
 
 // DeleteCF queues a deletion of the data at key in a column family.
 func (wb *WriteBatch) DeleteCF(cf *ColumnFamilyHandle, key []byte) {
 
-	fmt.Printf("DeleteCF \n")
+	fmt.Printf("gorocksdb/writeBatch DeleteCF \n")
 }
 
 // Data returns the serialized version of this batch.
@@ -87,12 +85,12 @@ func (wb *WriteBatch) NewIterator() *WriteBatchIterator {
 
 // Clear removes all the enqueued Put and Deletes.
 func (wb *WriteBatch) Clear() {
-	fmt.Printf("Clear \n")
+	fmt.Printf("gorocksdb/writeBatch Clear \n")
 }
 
 // Destroy deallocates the WriteBatch object.
 func (wb *WriteBatch) Destroy() {
-	fmt.Printf("Destroy \n")
+	fmt.Printf("gorocksdb/writeBatch Destroy \n")
 	
 }
 

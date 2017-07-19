@@ -180,12 +180,14 @@ func (openchainDB *OpenchainDB) DeleteState() error {
 func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte) ([]byte, error) {
 
 	slice, _ := openchainDB.DB.GetCF( cfHandler, key)
-	fmt.Printf("Get slice %#v\n", slice)
+	fmt.Printf("core/db Get slice %#v\n", slice)
+	fmt.Printf("core/db Get key %#v\n", string(key))
 	if slice.Data() == nil {
 		return nil, nil
 	}
 	data := makeCopy(slice.Data())
-	fmt.Printf("openchainDB Get data %#v\n", data)
+	fmt.Printf("core/db openchainDB Get data %s\n", data)
+	fmt.Printf("core/db openchainDB Get data %v\n", data)
 	if len(data) < 2 {
 		return nil,nil
 	}
@@ -194,8 +196,8 @@ func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key
 
 // Put saves the key/value in the given column family
 func (openchainDB *OpenchainDB) Put(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte, value []byte) error {
-	fmt.Printf("Put key %#v\n", key)
-	fmt.Printf("Put value %#v\n", value)
+	fmt.Printf("core/db Put key %#v\n", key)
+	fmt.Printf("core/db Put value %#v\n", value)
 	err := openchainDB.DB.PutCF(cfHandler, key, value)
 	if err != nil {
 		dbLogger.Errorf("Error while trying to write key: %s", key)

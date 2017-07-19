@@ -15,7 +15,7 @@ func NewSlice(data string, size int) *Slice {
 
 // Data returns the data of the slice.
 func (s *Slice) Data() []byte {
-	return []byte(s.data + string(s.size))
+	return []byte(s.data /*+ string(s.size)*/)
 }
 
 // Size returns the size of the data.

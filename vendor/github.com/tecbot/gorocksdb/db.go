@@ -263,7 +263,10 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 		cValLen int
 	)
 
-	file, e := ioutil.ReadFile("github.com/hyperledger/fabric/db.txt")
+	
+	file1, _ := os.OpenFile("db.txt",os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	defer file1.Close()
+	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
 		os.Exit(1)
@@ -277,24 +280,25 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 	var jsontype []*DataJson
 	json.Unmarshal([]byte(fileS), &jsontype)
 
-	fmt.Printf("GetCF jsontype: %+v\n  file:%#v\n  ", jsontype, string(file))
-	fmt.Printf("GetCF key: %+v\n  ", string(key))
-
+	fmt.Printf("gorocksdb/db GetCF jsontype: %+v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
+	fmt.Printf("gorocksdb/db GetCF key: %+v\n", string(key))
+	fmt.Printf("\ngorocksdb/db GetCF start loop len(jsontype)\n")
 	for i:=0; i<len(jsontype); i++{
-		fmt.Printf("GetCF jsontype: %+v\n  ", string(jsontype[i].Value))
+		fmt.Printf("gorocksdb/db GetCF jsontype.Value: <[%+v]>\n", string(jsontype[i].Value))
 		if bytes.Equal(key,jsontype[i].Key){
 			cValue = jsontype[i].Value
 			cValLen = i
 			break
 		}
 	}
+	fmt.Printf("gorocksdb/db GetCF end loop len(jsontype) \n\n")
 
 	//cValue := C.rocksdb_get_cf(db.c, opts.c, cf.c, cKey, C.size_t(len(key)), &cValLen, &cErr)
 	/*if cErr != nil {
 		defer C.free(unsafe.Pointer(cErr))
 		return nil, errors.New(C.GoString(cErr))
 	}*/
-	fmt.Printf("GetCF cValLen: %#v\n  cValue:%#v\n  ", cValLen, cValue)
+	fmt.Printf("gorocksdb/db GetCF cValLen: %#v\ngorocksdb/db GetCF cValue:%#v\n", cValLen, cValue)
 	return NewSlice(string(cValue), cValLen), nil
 }
 /*
@@ -315,7 +319,7 @@ func (db *DB) Put(opts *WriteOptions, key, value []byte) error {
 */
 // PutCF writes data associated with a key to the database and column family.
 func (db *DB) PutCF(cf *ColumnFamilyHandle, key, value []byte) error {
-	fmt.Printf("PutCF key: %#v\n  value:%#v\n  ", key, value)
+	fmt.Printf("gorocksdb/db PutCF key: %#v\ngorocksdb/db PutCF value:%#v\n", key, value)
 	var dataJson DataJson
 	dataJson.Key = key
 	dataJson.Value = value

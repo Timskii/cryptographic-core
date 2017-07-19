@@ -155,9 +155,11 @@ func (state *State) Set(chaincodeID string, key string, value []byte) error {
 	if state.currentTxStateDelta.IsUpdatedValueSet(chaincodeID, key) {
 		// No need to bother looking up the previous value as we will not
 		// set it again. Just pass nil
+		fmt.Printf("state.go IsUpdateValueSet = true\n")
 		state.currentTxStateDelta.Set(chaincodeID, key, value, nil)
 	} else {
 		// Need to lookup the previous value
+		fmt.Printf("state.go IsUpdateValueSet = false\n")
 		previousValue, err := state.Get(chaincodeID, key, true)
 		if err != nil {
 			return err
