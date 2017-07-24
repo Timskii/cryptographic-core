@@ -42,6 +42,7 @@ func NewStateDelta() *StateDelta {
 // Get get the state from delta if exists
 func (stateDelta *StateDelta) Get(chaincodeID string, key string) *UpdatedValue {
 	// TODO Cache?
+	fmt.Printf("\nstate_delta.go Get")
 	chaincodeStateDelta, ok := stateDelta.ChaincodeStateDeltas[chaincodeID]
 	if ok {
 		return chaincodeStateDelta.get(key)

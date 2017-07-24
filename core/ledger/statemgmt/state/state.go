@@ -161,12 +161,13 @@ func (state *State) Set(chaincodeID string, key string, value []byte) error {
 		// Need to lookup the previous value
 		fmt.Printf("state.go IsUpdateValueSet = false\n")
 		previousValue, err := state.Get(chaincodeID, key, true)
+		fmt.Printf("state.go previousValue = %v\n",previousValue)
 		if err != nil {
 			return err
 		}
 		state.currentTxStateDelta.Set(chaincodeID, key, value, previousValue)
 	}
-
+	fmt.Printf("state.go state.currentTxStateDelta = %v\n",state.currentTxStateDelta)
 	return nil
 }
 

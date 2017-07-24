@@ -16,7 +16,7 @@ func AddData (jsonobject []*Jsonobject){
 
 	fmt.Printf("AddData \n")
 
-	transactions := []*protos.Transaction{}
+
 	fmt.Println("\n\n------------InitTestLedger --------------")
 	ledger1,_ := ledger.GetLedger() //ledger.InitTestLedger()
 	fmt.Println("\n\n------------InitTestLedger --------------")
@@ -28,6 +28,7 @@ func AddData (jsonobject []*Jsonobject){
 	}
 	
 	for i := 0; i < len(jsonobject); i++{
+		transactions := []*protos.Transaction{}
 		ledger1.BeginTxBatch(1)
 		args := jsonobject[i].Params.CtorMsg.Args
 		fmt.Println("\n\n------------transaction --------------")
@@ -50,9 +51,7 @@ func AddData (jsonobject []*Jsonobject){
 		ledger1.TxBegin(transaction.Txid)
  		ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]+args[3]))
 		transactions = append(transactions,transaction)
-		ledger1.TxFinished(transactions[i].Txid, true)
-		ledger1.CommitTxBatch(1, transactions, nil, []byte("dummy-proof"))	//COMN
+		ledger1.TxFinished(transaction.Txid, true)
+		ledger1.CommitTxBatch(1, transactions, nil, nil)	//COMN
 	}	
-
-	fmt.Println((fmt.Sprintf("%+v\n", transactions)))
 }
