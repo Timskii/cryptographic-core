@@ -87,6 +87,8 @@ func (block *Block) GetHash() ([]byte, error) {
 		return nil, fmt.Errorf("Could not calculate hash of block: %s", err)
 	}
 	hash := util.ComputeCryptoHash(data)
+	fmt.Printf("\nblock.go GetHash hash = %+v",hash)
+	fmt.Printf("\nblock.go GetHash hash = %#v\n",hash)
 	return hash, nil
 }
 
@@ -108,7 +110,7 @@ func UnmarshallBlock(blockBytes []byte) (*Block, error) {
 	block := &Block{}
 	fmt.Printf("protos/block.go UnmarshallBlock: %v\n", blockBytes)
 	//err := proto.Unmarshal(blockBytes, block)
-	json.Unmarshal(blockBytes, &block)
+	json.Unmarshal(blockBytes, block)
 	fmt.Printf("protos/block.go UnmarshallBlock block: %s\n", block)
 	/*if err != nil {
 		logger.Errorf("UnmarshallBlock Error unmarshalling block: %s", err)

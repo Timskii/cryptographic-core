@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package sha3 implements the SHA-3 fixed-output-length hash functions and
+// Package sha3 implements only SHAKE-256 of the SHA-3 fixed-output-length hash functions and
 // the SHAKE variable-output-length hash functions defined by FIPS-202.
 //
 // Both types of hash function use the "sponge" construction and the Keccak

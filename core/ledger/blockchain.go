@@ -24,6 +24,9 @@ import (
 
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/util"
+
+	ut "github.com/hyperledger/fabric/util"
+
 	"github.com/hyperledger/fabric/protos"
 	"github.com/tecbot/gorocksdb"
 	"golang.org/x/net/context"
@@ -47,9 +50,10 @@ type lastProcessedBlock struct {
 var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
+	var err error
 	fmt.Printf("\nblockchqin.go  newBlockchain ")
-	size, err := fetchBlockchainSizeFromDB()
-	fmt.Printf("\nblockchqin.go  newBlockchain err: %v\n",err)
+	//size, err := fetchBlockchainSizeFromDB()
+	size := ut.GetBlocchainSize()
 	fmt.Printf("\nblockchqin.go  newBlockchain size: %v\n",size)
 	if err != nil {
 		return nil, err
@@ -321,13 +325,10 @@ func encodeBlockNumberDBKey(blockNumber uint64) []byte {
 func encodeUint64(number uint64) []byte {
 	bytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(bytes, number)
-	fmt.Printf("\nblockchain.go encodeUnit64 bytes = [%s]\n",bytes)
-	fmt.Printf("\nblockchain.go encodeUnit64 bytes = [%#v]\n",bytes)
 	return bytes
 }
 
 func decodeToUint64(bytes []byte) uint64 {
-		fmt.Printf("blockchqin.go decodeToUint64 bytes = [%v] str=[%v] \nblockchqin.go decodeToUint64 len = %v \n",bytes,string(bytes),len(bytes))
 	return binary.BigEndian.Uint64(bytes)
 }
 

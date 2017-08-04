@@ -17,9 +17,7 @@ func AddData (jsonobject []*Jsonobject){
 	fmt.Printf("AddData \n")
 
 
-	fmt.Println("\n\n------------InitTestLedger --------------")
-	ledger1,_ := ledger.GetLedger() //ledger.InitTestLedger()
-	fmt.Println("\n\n------------InitTestLedger --------------")
+	ledger1,_ := ledger.GetLedger()
 	if ledger1.GetBlockchainSize() == 0 {
 		if makeGenesisError := ledger1.BeginTxBatch(0); makeGenesisError == nil {
 			makeGenesisError := ledger1.CommitTxBatch(0, nil, nil, nil)
@@ -40,18 +38,19 @@ func AddData (jsonobject []*Jsonobject){
 			&protos.ChaincodeInvocationSpec{
 					ChaincodeSpec: &protos.ChaincodeSpec{
 												CtorMsg: &protos.ChaincodeInput{
-														Args: ut.ToChaincodeArgs(args[0],args[1],args[2],args[3])},
+														Args: ut.ToChaincodeArgs(args[0],args[1],args[2],)},
 												ChaincodeID : &protos.ChaincodeID{Name: jsonobject[i].Params.ChaincodeID.Name},
 																}},
 			ut.GenerateUUID(),
 			t)
 		if err != nil {
 			fmt.Printf("Error creating NewTransaction: %s", err)
+		} else {
+			ledger1.TxBegin(transaction.Txid)
+			ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]))
+			transactions = append(transactions, transaction)
+			ledger1.TxFinished(transaction.Txid, true)
+			ledger1.CommitTxBatch(1, transactions, nil, nil) //COMN
 		}
-		ledger1.TxBegin(transaction.Txid)
- 		ledger1.SetState(jsonobject[i].Params.ChaincodeID.Name, util.GenerateKey(&args), []byte(args[2]+args[3]))
-		transactions = append(transactions,transaction)
-		ledger1.TxFinished(transaction.Txid, true)
-		ledger1.CommitTxBatch(1, transactions, nil, nil)	//COMN
 	}	
 }

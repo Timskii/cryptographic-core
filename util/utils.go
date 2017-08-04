@@ -8,12 +8,27 @@ import (
 		//"github.com/hyperledger/fabric/protos"
 		"github.com/hyperledger/fabric/protos"
 		//"time"
-	)
+
+	"io/ioutil"
+	"strings"
+)
 
 type BlockDb struct {
-	Height	int32 			`json:"heigth"`
+	Height	uint64 			`json:"heigth"`
 	Block 	protos.Block 	`json:"block"`
 
+}
+var filename string = "db_blocks.txt"
+
+func GetBlocchainSize() uint64{
+	var blockCount uint64 = 0
+	var blockDbs []BlockDb
+
+	dataCount, _ := ioutil.ReadFile(filename)
+	fileS := "[" + strings.TrimRight(string(dataCount),",\n") + "]"
+	json.Unmarshal([]byte(fileS), &blockDbs)
+	blockCount = uint64(len(blockDbs))
+	return blockCount
 }
 
 
@@ -28,16 +43,14 @@ func PrintData(data []byte){
 }
 
 func PrintDataBlock(block protos.Block){
-	//dat := time.Now()
-	filename :="db_blocks"  //"github.com/hyperledger/fabric/db_blocks" //dat.Format("20060102")
 	var blockDb BlockDb
-	blockDb.Height = 1
+
+	blockDb.Height = GetBlocchainSize()
 	blockDb.Block = block
 
 	data,_ := json.Marshal(blockDb)
 	data = append(data,[]byte(",\n")...)
-
-	file, _ := os.OpenFile(filename+".txt",os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	file, _ := os.OpenFile(filename,os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	defer file.Close()
 
 	_, _ = file.Write(data)

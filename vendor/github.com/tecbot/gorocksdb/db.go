@@ -263,9 +263,6 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 		cValLen int
 	)
 
-	
-	file1, _ := os.OpenFile("db.txt",os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	defer file1.Close()
 	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
@@ -280,9 +277,9 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 	var jsontype []*DataJson
 	json.Unmarshal([]byte(fileS), &jsontype)
 
-	fmt.Printf("gorocksdb/db GetCF jsontype: %+v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
+	fmt.Printf("gorocksdb/db GetCF jsontype: %#v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
 	fmt.Printf("gorocksdb/db GetCF key: %+v\n", string(key))
-	fmt.Printf("\ngorocksdb/db GetCF start loop len(jsontype)\n")
+	fmt.Printf("\ngorocksdb/db GetCF start loop len(jsontype) = %v\n",len(jsontype))
 	for i:=0; i<len(jsontype); i++{
 		fmt.Printf("gorocksdb/db GetCF jsontype.Value: <[%+v]>\n", string(jsontype[i].Value))
 		if bytes.Equal(key,jsontype[i].Key){
