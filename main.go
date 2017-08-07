@@ -27,6 +27,7 @@ func readFile (fileName string){
 }
 
 func createBlock(){
+	core.CreateNilBlock()
 	fmt.Println("Block is created")
 }
 
