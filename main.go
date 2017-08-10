@@ -38,6 +38,8 @@ func readTransaction(id string){
 func testBlock(){
 	fmt.Println("Test begin")
 
+	fmt.Println("Test end")
+
 }
 
 	
@@ -45,7 +47,7 @@ func main(){
 	fmt.Printf("Args1 %v\n", os.Args)
 	method := os.Args[1]
 
-	if strings.Compare(method,"c")==0 {
+	if strings.Compare(method,"i")==0 {
 		createBlock()
 	} else if strings.Compare(method,"w") ==0 {
 		readFile("./"+os.Args[2])

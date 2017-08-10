@@ -276,11 +276,12 @@ func (ledger *Ledger) GetStateRangeScanIterator(chaincodeID string, startKey str
 
 // SetState sets state to given value for chaincodeID and key. Does not immideatly writes to DB
 func (ledger *Ledger) SetState(chaincodeID string, key string, value []byte) error {
+	fmt.Printf("\nledger.go SetState key = %v\nledger.go SetState value = %v\nledger.go SetState valueS = %s\n", key, value,value)
 	if key == "" || value == nil {
 		return newLedgerError(ErrorTypeInvalidArgument,
 			fmt.Sprintf("An empty string key or a nil value is not supported. Method invoked with key='%s', value='%#v'", key, value))
 	}
-	fmt.Printf("ledger.go GetStateRangeScanIterator chaincodeID = %v\nledger.go GetStateRangeScanIterator key = %v\nledger.go GetStateRangeScanIterator value = %v\n", chaincodeID, key, value)
+
 	return ledger.state.Set(chaincodeID, key, value)
 }
 

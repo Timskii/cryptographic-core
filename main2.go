@@ -31,8 +31,9 @@ func readFile1 (fileName string){
 	
 func main(){
 	fmt.Printf("Args1 %v\n", os.Args)
+	//core.CreateNilBlock()
 
-	file, e := ioutil.ReadFile("github.com/hyperledger/fabric/transactions.json")
+	file, e := ioutil.ReadFile("github.com/hyperledger/fabric/transactions_transfer.json")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
 		os.Exit(1)

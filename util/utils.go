@@ -56,9 +56,8 @@ func PrintDataBlock(block protos.Block){
 	_, _ = file.Write(data)
 }
 
-func GenerateKey(value *[]string) string {
+func GenerateKey(value1, value2 string) string {
 	var key string
-	args := *value
-	key = strconv.Itoa(len(args[0]))+args[0]+strconv.Itoa(len(args[1]))+args[1]
+	key = strconv.Itoa(len(value1))+value1+strconv.Itoa(len(value2))+value2
 	return key
 }

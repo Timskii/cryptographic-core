@@ -186,6 +186,7 @@ func (chaincodeStateDelta *ChaincodeStateDelta) get(key string) *UpdatedValue {
 
 func (chaincodeStateDelta *ChaincodeStateDelta) set(key string, updatedValue, previousValue []byte) {
 	updatedKV, ok := chaincodeStateDelta.UpdatedKVs[key]
+	fmt.Printf("chaincodeStateDelta ok %v\n",ok)
 	if ok {
 		// Key already exists, just set the updated value
 		updatedKV.Value = updatedValue

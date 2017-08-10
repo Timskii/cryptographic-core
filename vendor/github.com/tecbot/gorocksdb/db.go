@@ -277,11 +277,12 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
 	var jsontype []*DataJson
 	json.Unmarshal([]byte(fileS), &jsontype)
 
-	fmt.Printf("gorocksdb/db GetCF jsontype: %#v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
+	fmt.Printf("\ngorocksdb/db GetCF jsontype: %#v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
 	fmt.Printf("gorocksdb/db GetCF key: %+v\n", string(key))
-	fmt.Printf("\ngorocksdb/db GetCF start loop len(jsontype) = %v\n",len(jsontype))
-	for i:=0; i<len(jsontype); i++{
+	fmt.Printf("gorocksdb/db GetCF start loop len(jsontype) = %v\n",len(jsontype))
+	for i:=len(jsontype)-1; i>0; i--{
 		fmt.Printf("gorocksdb/db GetCF jsontype.Value: <[%+v]>\n", string(jsontype[i].Value))
+		fmt.Printf("gorocksdb/db GetCF jsontype.key: <[%+v]>\n", string(jsontype[i].Key))
 		if bytes.Equal(key,jsontype[i].Key){
 			cValue = jsontype[i].Value
 			cValLen = i
