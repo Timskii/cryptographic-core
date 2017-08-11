@@ -61,3 +61,11 @@ func GenerateKey(value1, value2 string) string {
 	key = strconv.Itoa(len(value1))+value1+strconv.Itoa(len(value2))+value2
 	return key
 }
+
+func ToChaincodeArgs(args []string) [][]byte {
+	bargs := make([][]byte, len(args))
+	for i, arg := range args {
+		bargs[i] = []byte(arg)
+	}
+	return bargs
+}
