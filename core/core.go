@@ -27,7 +27,7 @@ func AddData (jsonobject []*Jsonobject){
 		if i==0 {commited = true}else{commited = false}
 		args := jsonobject[i].Params.CtorMsg.Args
 		chaincodeID := jsonobject[i].Params.ChaincodeID.Name
-		transaction,err := createtransaction(args,chaincodeID)
+		transaction,err := createTransaction(args,chaincodeID)
 		if err != nil {
 			fmt.Println("ошибка создания транзакции: ",err)
 		}else {
@@ -57,7 +57,7 @@ func AddData (jsonobject []*Jsonobject){
 	fmt.Printf("\noldValueByte1 = %s, oldValueByte2 = %s\nfinalValue1 = %s, finalValue2 = %s",oldValueByte1,oldValueByte2,finalValue1,finalValue2)
 }
 
-func createtransaction(args []string, chaincodeID string) (*protos.Transaction, error) {
+func createTransaction(args []string, chaincodeID string) (*protos.Transaction, error) {
 	transaction, err := protos.NewChaincodeExecute(
 		&protos.ChaincodeInvocationSpec{
 			ChaincodeSpec: &protos.ChaincodeSpec{

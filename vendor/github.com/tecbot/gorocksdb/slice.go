@@ -25,5 +25,5 @@ func (s *Slice) Size() int {
 
 // Free frees the slice data.
 func (s *Slice) Free() {
-
+	s.freed = true
 }
