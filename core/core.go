@@ -13,6 +13,8 @@ import (
 	"encoding/base64"
 	"github.com/hyperledger/fabric/core/ledger/statemgmt"
 	"github.com/hyperledger/fabric/core/db"
+//	"github.com/golang/protobuf/proto"
+	"bytes"
 )
 
 func AddData (jsonobject []*Jsonobject){
@@ -92,62 +94,84 @@ func CreateNilBlock(){
 	}
 }
 
+const level  = 9
+
 func ReadTransaction(idx string){
 	var payload Payload
-	var firstKey, secondKey string
 	var chaincodeID		ChaincodeID
+	var hash,hashDB,state []byte
+	var bucketKey *bucketKey
+	var isValid bool = true
 
 
 	ledger,_ := ledger.GetLedger()
 
-	transaction, err := ledger.GetTransactionByID(idx)
-	fmt.Printf("\nerr = %s\n", err)
+	transaction, _ := ledger.GetTransactionByID(idx)
+	if transaction != nil {
+		fmt.Printf("Транзакция с id <%s> = %s\n",idx,transaction)
+		blockNumber := util.GetBlockNumberByTransaction(idx)
 
-	blockNumber := util.GetBlockNumberByTransaction(idx)
+		json.Unmarshal(transaction.Payload, &payload)
+		json.Unmarshal(transaction.ChaincodeID, &chaincodeID)
 
-	fmt.Printf("\nblockNumber = %d\n", blockNumber)
-	err = json.Unmarshal(transaction.Payload,&payload)
-	fmt.Printf("\nerr = %s\n", err)
-	err = json.Unmarshal(transaction.ChaincodeID,&chaincodeID)
-	fmt.Printf("\nerr = %s\n", err)
+		args := payload.ChaincodeSpec.CtorMsg.Args
+		for i, arg := range args {
+			str, _ := base64.StdEncoding.DecodeString(arg)
+			args[i] = string(str)
+		}
 
-	args := payload.ChaincodeSpec.CtorMsg.Args
-	for i,arg := range args{
-		str,_ := base64.StdEncoding.DecodeString(arg)
-		args[i] = string(str)
+		for i:=1; i<len(args)-1; i++ {
+			state, bucketKey = getState(args[0], args[i], chaincodeID, blockNumber)
+			hash=ut.ComputeCryptoHash(state)
+			hashDB = getHashFromDB(bucketKey, blockNumber)
+			fmt.Printf(	"Состояние %d   = %x\n"+
+							    "Хеш состояния = %x\n"+
+								"Хеш из базы   = %x\n", i,state, hash, hashDB)
+			if bytes.Compare(hashDB , hash) !=0 {isValid = false}
+		}
+		if isValid == true {
+			fmt.Println("Транзакция корректна.")
+		}else{
+			fmt.Println("Транзакция не корректна!")
+		}
+	/*	if len(args) > 3 {
+			hashTransaction2, bucketKey2 = getHashFromStates(args[0], args[2], chaincodeID, blockNumber)
+			hashDB2 = getHashFromDB(bucketKey2, blockNumber)
+			fmt.Printf("\nХэш от транзакции = %x\nХэш из базы данных = %x", hashTransaction2, hashDB2)
+		}
+		fmt.Printf("\nХэш от транзакции = %x\nХэш из базы данных = %x", hashTransaction, hashDB)*/
+	}else{
+		fmt.Printf("Транзакция с id <%s> не найдена!",idx)
 	}
-	fmt.Printf("\nargs = %v\n", args)
 
-	firstKey = util.GenerateKey(args[0],args[1])
-	if len(args)> 3{
-		secondKey = util.GenerateKey(args[0],args[2])
-	}
-	fmt.Printf("\nfirstKey = %v\nsecondKey = %v\n", firstKey,secondKey)
-
+}
+func getState(nin string, user string,chaincodeID ChaincodeID, blockNumber int) ([]byte, *bucketKey){
+	key := util.GenerateKey(nin,user)
 	hashFunction := fnvHash
 	conf := &config{hashFunc:hashFunction}
-
-	compositeKey1 := statemgmt.ConstructCompositeKey(chaincodeID.Name, firstKey)
-	compositeKey2 := statemgmt.ConstructCompositeKey(chaincodeID.Name, secondKey)
-
-	bucketHash := conf.computeBucketHash(compositeKey1)
-	bucketHash2 := conf.computeBucketHash(compositeKey2)
-
+	compositeKey := statemgmt.ConstructCompositeKey(chaincodeID.Name, key)
+	bucketHash := conf.computeBucketHash(compositeKey)
 	bucketNumber := int(bucketHash)%1000003 + 1
-	bucketNumber2 := int(bucketHash2)%1000003 + 1
-
-	dataKey2	:= &dataKey{&bucketKey{9, bucketNumber2},compositeKey2}
-	dataKey		:= &dataKey{&bucketKey{9, bucketNumber},compositeKey1}
-
+	bucketKey := &bucketKey{level, bucketNumber}
+	dataKey	:= &dataKey{bucketKey,compositeKey}
 	openchainDB := db.GetDBHandle()
-	nodeBytes, err := openchainDB.GetFromStateCFForBlockNumber(dataKey.getEncodedBytes(),blockNumber)
-	nodeBytes2, err := openchainDB.GetFromStateCFForBlockNumber(dataKey2.getEncodedBytes(),blockNumber)
+	nodeBytes, _ := openchainDB.GetFromStateCFForBlockNumber(dataKey.getEncodedBytes(),blockNumber)
 
-	finalHash := computeCryptoHash(chaincodeID.Name,firstKey,nodeBytes)
-	finalHash2 := computeCryptoHash(chaincodeID.Name,secondKey,nodeBytes2)
+	state := &hash{nil}
+	state.appendSizeAndData([]byte(chaincodeID.Name))
+	state.appendSize(1)
+	state.appendSizeAndData([]byte(key))
+	state.appendSizeAndData(nodeBytes)
 
-	fmt.Printf("finalHash = %x\n",finalHash)
-	fmt.Printf("finalHash2 = %x\n",finalHash2)
+	return state.hashingData,bucketKey
+}
 
+func getHashFromDB (bucketKey *bucketKey, blockNumber int) []byte{
+	openchainDB := db.GetDBHandle()
+	bucketKey.level = level-1
+	bucketKey.bucketNumber = computeBucketNumber(bucketKey.bucketNumber)
+	hashDBKey := bucketKey.getEncodedBytes()
+	hashDB ,_ := openchainDB.GetFromStateCFForBlockNumber(hashDBKey,blockNumber)
 
+	return unmarshalCryptoHash(hashDB)
 }

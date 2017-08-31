@@ -5,13 +5,13 @@ import (
 	"hash/fnv"
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/ledger/util"
-	ut"github.com/hyperledger/fabric/core/util"
 )
 
 func (config *config) computeBucketHash(data []byte) uint32 {
 	fmt.Printf("config data = %s\n", data)
 	return config.hashFunc(data)
 }
+const MaxGroupingAtEachLevel = 5
 
 type config struct {
 	maxGroupingAtEachLevel int
@@ -39,6 +39,16 @@ func (key *dataKey) getEncodedBytes() []byte {
 	encodedBytes = append(encodedBytes, key.compositeKey...)
 	return encodedBytes
 }
+
+func (bucketKey *bucketKey) getEncodedBytes() []byte {
+
+	encodedBytes := []byte{}
+	encodedBytes = append(encodedBytes, byte(0))
+	encodedBytes = append(encodedBytes, proto.EncodeVarint(uint64(bucketKey.level))...)
+	encodedBytes = append(encodedBytes, proto.EncodeVarint(uint64(bucketKey.bucketNumber))...)
+	return encodedBytes
+}
+
 func encodeBucketNumber(bucketNumber int) []byte {
 	return util.EncodeOrderPreservingVarUint64(uint64(bucketNumber))
 }
@@ -56,11 +66,26 @@ func (c *hash) appendSize(size int) {
 	c.hashingData = append(c.hashingData, proto.EncodeVarint(uint64(size))...)
 }
 
-func computeCryptoHash(chaincodeID,key string, value []byte)([]byte){
-	hash := &hash{nil}
-	hash.appendSizeAndData([]byte(chaincodeID))
-	hash.appendSize(1)
-	hash.appendSizeAndData([]byte(key))
-	hash.appendSizeAndData(value)
-	return ut.ComputeCryptoHash(hash.hashingData)
+func computeBucketNumber (bucketNumber int) (int){
+	BucketNumber := bucketNumber/MaxGroupingAtEachLevel
+	if bucketNumber%MaxGroupingAtEachLevel != 0 {
+		BucketNumber++
+	}
+	return BucketNumber
 }
+
+func unmarshalCryptoHash(serializedBytes []byte) []byte {
+	var unmarshalCryptoHash []byte
+	fmt.Printf("serializedBytes = %x\n",serializedBytes)
+	buffer := proto.NewBuffer(serializedBytes)
+	for i := 0; i < MaxGroupingAtEachLevel; i++ {
+		cryptoHash, _ := buffer.DecodeRawBytes(false)
+		if len(cryptoHash)> 10 {
+			unmarshalCryptoHash = cryptoHash
+			break
+		}
+	}
+	fmt.Printf("unmarshalCryptoHash = %x\n",unmarshalCryptoHash)
+	return unmarshalCryptoHash
+}
+
