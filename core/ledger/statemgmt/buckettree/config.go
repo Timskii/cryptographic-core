@@ -127,9 +127,8 @@ func (config *config) computeParentBucketNumber(bucketNumber int) int {
 type hashFunc func(data []byte) uint32
 
 func fnvHash(data []byte) uint32 {
-	fmt.Printf("fnvHash \n")
 	fnvHash := fnv.New32a()
 	fnvHash.Write(data)
-	fmt.Printf("fnvHash fnvHash = %s\n", fnvHash)
+	//fmt.Printf("fnvHash fnvHash.Sum32 = %#v\n", fnvHash.Sum32)
 	return fnvHash.Sum32()
 }

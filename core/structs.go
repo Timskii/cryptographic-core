@@ -48,6 +48,14 @@ type Transaction struct{
 	Signature						[]byte       	
 }
 
+type Payload struct {
+	ChaincodeSpec ChaincodeSpec `json:"chaincodeSpec"`
+}
+
+type ChaincodeSpec struct {
+	ChaincodeID ChaincodeID		`json:"chaincodeID"`
+	CtorMsg CtorMsgType			`json:"ctorMsg"`
+}
 
 type ChaincodeID struct {
 	Path string 

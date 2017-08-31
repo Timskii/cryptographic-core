@@ -79,13 +79,20 @@ func (bucketNode *bucketNode) mergeBucketNode(anotherBucketNode *bucketNode) {
 func (bucketNode *bucketNode) computeCryptoHash() []byte {
 	cryptoHashContent := []byte{}
 	numChildren := 0
+
 	for i, childCryptoHash := range bucketNode.childrenCryptoHash {
 		if childCryptoHash != nil {
 			numChildren++
 			logger.Debugf("Appending crypto-hash for child bucket = [%s]", bucketNode.bucketKey.getChildKey(i))
+			fmt.Printf("\nAppending crypto-hash for child bucket = [%s]", bucketNode.bucketKey.getChildKey(i))
+
+			fmt.Printf("\nchildCryptoHash = %v",childCryptoHash)
+			fmt.Printf("\nchildCryptoHash = %x",childCryptoHash)
 			cryptoHashContent = append(cryptoHashContent, childCryptoHash...)
+			fmt.Printf("\ncryptoHashContent = %x\n",cryptoHashContent)
 		}
 	}
+	fmt.Printf("\nfinalcryptoHashContent = %x\n",cryptoHashContent)
 	if numChildren == 0 {
 		logger.Debugf("Returning <nil> crypto-hash of bucket = [%s] - because, it has not children", bucketNode.bucketKey)
 		bucketNode.markedForDeletion = true

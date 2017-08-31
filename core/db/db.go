@@ -78,7 +78,9 @@ func Stop() {
 
 // GetFromBlockchainCF get value for given key from column family - blockchainCF
 func (openchainDB *OpenchainDB) GetFromBlockchainCF(key []byte) ([]byte, error) {
-	return openchainDB.Get(openchainDB.BlockchainCF, key) 
+	openchainDB.BlockchainCF = &gorocksdb.ColumnFamilyHandle{}
+	openchainDB.BlockchainCF.Type = gorocksdb.Blockchain
+	return openchainDB.Get(openchainDB.BlockchainCF, key,0)
 }
 
 // GetFromBlockchainCFSnapshot get value for given key from column family in a DB snapshot - blockchainCF
@@ -88,17 +90,29 @@ func (openchainDB *OpenchainDB) GetFromBlockchainCFSnapshot(snapshot *gorocksdb.
 
 // GetFromStateCF get value for given key from column family - stateCF
 func (openchainDB *OpenchainDB) GetFromStateCF(key []byte) ([]byte, error) {
-	return openchainDB.Get(openchainDB.StateCF, key)
+	openchainDB.StateCF = &gorocksdb.ColumnFamilyHandle{}
+	openchainDB.StateCF.Type = 1
+	return openchainDB.Get(openchainDB.StateCF, key,0)
+}
+
+func (openchainDB *OpenchainDB) GetFromStateCFForBlockNumber(key []byte,blockNumber int) ([]byte, error) {
+	openchainDB.StateCF = &gorocksdb.ColumnFamilyHandle{}
+	openchainDB.StateCF.Type = 1
+	return openchainDB.Get(openchainDB.StateCF, key,blockNumber)
 }
 
 // GetFromStateDeltaCF get value for given key from column family - stateDeltaCF
 func (openchainDB *OpenchainDB) GetFromStateDeltaCF(key []byte) ([]byte, error) {
-	return openchainDB.Get(openchainDB.StateDeltaCF, key)
+	openchainDB.StateDeltaCF = &gorocksdb.ColumnFamilyHandle{}
+	openchainDB.StateDeltaCF.Type = 2
+	return openchainDB.Get(openchainDB.StateDeltaCF, key,0)
 }
 
 // GetFromIndexesCF get value for given key from column family - indexCF
 func (openchainDB *OpenchainDB) GetFromIndexesCF(key []byte) ([]byte, error) {
-	return openchainDB.Get(openchainDB.IndexesCF, key)
+	openchainDB.IndexesCF = &gorocksdb.ColumnFamilyHandle{}
+	openchainDB.IndexesCF.Type = 3
+	return openchainDB.Get(openchainDB.IndexesCF, key,0)
 }
 
 // GetBlockchainCFIterator get iterator for column family - blockchainCF
@@ -177,17 +191,14 @@ func (openchainDB *OpenchainDB) DeleteState() error {
 }
 
 // Get returns the valud for the given column family and key
-func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte) ([]byte, error) {
+func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte, blockNumber int) ([]byte, error) {
 
-	slice, _ := openchainDB.DB.GetCF( cfHandler, key)
+	slice, _ := openchainDB.DB.GetCF( cfHandler, key, blockNumber)
 	fmt.Printf("core/db Get slice %#v\n", slice)
-	fmt.Printf("core/db Get key %#v\n", string(key))
 	if slice.Data() == nil {
 		return nil, nil
 	}
 	data := makeCopy(slice.Data())
-	fmt.Printf("core/db openchainDB Get data %s\n", data)
-	fmt.Printf("core/db openchainDB Get data %v\n", data)
 	if len(data) < 2 {
 		return nil,nil
 	}

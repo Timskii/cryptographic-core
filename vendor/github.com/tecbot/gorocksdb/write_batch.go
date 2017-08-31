@@ -10,8 +10,16 @@ type WriteBatch struct {
 	}
 
 type ColumnFamilyHandle struct {
-
+	Type int
 }
+
+
+
+const (
+	Blockchain int = 0
+)
+
+
 // NewWriteBatch create a WriteBatch object.
 func NewWriteBatch() *WriteBatch {
 	return  &WriteBatch{}
@@ -29,15 +37,14 @@ func (wb *WriteBatch) Put(key, value []byte) {
 
 // PutCF queues a key-value pair in a column family.
 func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
-	fmt.Printf("\nWriteBatch PutCF Svalue:%#v \nWriteBatch PutCF Skey:%#v \n",string(value),string(key))
-	fmt.Printf("\nWriteBatch PutCF value:%#v \nWriteBatch PutCF key:%#v \n",value,key)
+	fmt.Printf("\nWriteBatch PutCF value:%x \nWriteBatch PutCF key:%x\n",value,key)
+	fmt.Printf("WriteBatch PutCF value:%s \nWriteBatch PutCF key:%v\n",value,key)
 	dataJson := new(DataJson)
 	dataJson.Key = key
 	dataJson.Value = value
 	data ,_ := json.Marshal(dataJson)
-	fmt.Printf("WriteBatch PutCF data:%#v \n", string(data))
 	//data = append(data,[]byte(",\n")...)
-	util.PrintData(data)
+	util.PrintData(data,"db")
 }
 
 // Merge queues a merge of "value" with the existing value of "key".

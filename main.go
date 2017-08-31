@@ -32,6 +32,7 @@ func createBlock(){
 }
 
 func readTransaction(id string){
+	core.ReadTransaction(id)
 	fmt.Printf("transaction id = %v\n", id)
 }
 

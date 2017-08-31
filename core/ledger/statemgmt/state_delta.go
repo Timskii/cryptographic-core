@@ -42,7 +42,6 @@ func NewStateDelta() *StateDelta {
 // Get get the state from delta if exists
 func (stateDelta *StateDelta) Get(chaincodeID string, key string) *UpdatedValue {
 	// TODO Cache?
-	fmt.Printf("\nstate_delta.go Get")
 	chaincodeStateDelta, ok := stateDelta.ChaincodeStateDeltas[chaincodeID]
 	if ok {
 		return chaincodeStateDelta.get(key)
@@ -186,7 +185,6 @@ func (chaincodeStateDelta *ChaincodeStateDelta) get(key string) *UpdatedValue {
 
 func (chaincodeStateDelta *ChaincodeStateDelta) set(key string, updatedValue, previousValue []byte) {
 	updatedKV, ok := chaincodeStateDelta.UpdatedKVs[key]
-	fmt.Printf("chaincodeStateDelta ok %v\n",ok)
 	if ok {
 		// Key already exists, just set the updated value
 		updatedKV.Value = updatedValue

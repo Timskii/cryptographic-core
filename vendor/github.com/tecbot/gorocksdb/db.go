@@ -4,13 +4,15 @@ import(
     "os"
     "fmt"
     "encoding/json"
-    "bytes"
+//    "bytes"
     "io/ioutil"
 
 
     "github.com/hyperledger/fabric/util"
 
 	"strings"
+	"bytes"
+	"github.com/hyperledger/fabric/protos"
 )
 
 
@@ -257,46 +259,57 @@ func (db *DB) GetBytes(opts *ReadOptions, key []byte) ([]byte, error) {
 }
 */
 // GetCF returns the data associated with the key from the database and column family.
-func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte) (*Slice, error) {
+func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slice, error) {
 	var (
 		cValue  []byte
 		cValLen int
+		countNumber int
 	)
+
 
 	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
 		os.Exit(1)
 	}
-	/*if len(file) < 2 {
-			return  NewSlice("cValues", 8), nil
-	}*/
 	fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
 	fileS = strings.Replace(fileS,"}{","},{",-1)
 
 	var jsontype []*DataJson
+	block := &protos.Block{}
 	json.Unmarshal([]byte(fileS), &jsontype)
 
-	fmt.Printf("\ngorocksdb/db GetCF jsontype: %#v\ngorocksdb/db GetCF file:%#v\n", jsontype, string(fileS))
-	fmt.Printf("gorocksdb/db GetCF key: %+v\n", string(key))
-	fmt.Printf("gorocksdb/db GetCF start loop len(jsontype) = %v\n",len(jsontype))
-	for i:=len(jsontype)-1; i>0; i--{
-		fmt.Printf("gorocksdb/db GetCF jsontype.Value: <[%+v]>\n", string(jsontype[i].Value))
-		fmt.Printf("gorocksdb/db GetCF jsontype.key: <[%+v]>\n", string(jsontype[i].Key))
-		if bytes.Equal(key,jsontype[i].Key){
-			cValue = jsontype[i].Value
-			cValLen = i
-			break
+	fmt.Printf("\ngorocksdb/db GetCF key: %#v\n", key)
+	fmt.Printf("gorocksdb/db GetCF key: %x\n", key)
+	if blockNumber != 0 {
+		fmt.Printf("gorocksdb/db blockNumber: %d\n", blockNumber)
+		for i := 0; i< len(jsontype);  i++ {
+			if bytes.Equal(key, jsontype[i].Key) {
+				countNumber++
+				if  countNumber == (blockNumber) {
+						cValue = jsontype[i].Value
+						cValLen = i
+						break
+				}
+			}
+		}
+	}else {
+		for i := len(jsontype) - 1; i > 0; i-- {
+			if cf.Type == Blockchain {
+				block = nil
+				json.Unmarshal(jsontype[i].Value, &block)
+			}
+			if bytes.Equal(key, jsontype[i].Key) {
+				if (cf.Type == Blockchain && block != nil) || cf.Type != Blockchain {
+
+					cValue = jsontype[i].Value
+					cValLen = i
+					break
+				}
+			}
 		}
 	}
-	fmt.Printf("gorocksdb/db GetCF end loop len(jsontype) \n\n")
-
-	//cValue := C.rocksdb_get_cf(db.c, opts.c, cf.c, cKey, C.size_t(len(key)), &cValLen, &cErr)
-	/*if cErr != nil {
-		defer C.free(unsafe.Pointer(cErr))
-		return nil, errors.New(C.GoString(cErr))
-	}*/
-	fmt.Printf("gorocksdb/db GetCF cValLen: %#v\ngorocksdb/db GetCF cValue:%#v\n", cValLen, cValue)
+	fmt.Printf("gorocksdb/db GetCF cValLen: %s\ngorocksdb/db GetCF cValue = %x\n", cValLen,cValue)
 	return NewSlice(string(cValue), cValLen), nil
 }
 /*
@@ -321,7 +334,7 @@ func (db *DB) PutCF(cf *ColumnFamilyHandle, key, value []byte) error {
 	var dataJson DataJson
 	dataJson.Key = key
 	dataJson.Value = value
-	util.PrintData([]byte(fmt.Sprintf("%+v\n", dataJson)))
+	util.PrintData([]byte(fmt.Sprintf("%+v\n", dataJson)),"db")
 	return nil
 }
 /*

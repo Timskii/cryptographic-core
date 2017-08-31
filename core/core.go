@@ -8,7 +8,12 @@ import (
 		"github.com/hyperledger/fabric/core/ledger"
 		ut "github.com/hyperledger/fabric/core/util"
 		"github.com/hyperledger/fabric/protos"
-		)
+
+	"encoding/json"
+	"encoding/base64"
+	"github.com/hyperledger/fabric/core/ledger/statemgmt"
+	"github.com/hyperledger/fabric/core/db"
+)
 
 func AddData (jsonobject []*Jsonobject){
 	var commited bool = false
@@ -19,7 +24,7 @@ func AddData (jsonobject []*Jsonobject){
 	ledger1,_ := ledger.GetLedger()
 	blockchainSize := ledger1.GetBlockchainSize()
 	if blockchainSize == 0 {
-		panic("!Внимание!\nНепрошла инициализация блока, запустите приложение с аргументом 'i'")
+		panic("!Внимание!\nНе прошла инициализация блока, запустите приложение с аргументом 'i'")
 	}
 	ledger1.BeginTxBatch(blockchainSize)
 
@@ -54,7 +59,6 @@ func AddData (jsonobject []*Jsonobject){
 	if len(transactions)>0 {
 		ledger1.CommitTxBatch(blockchainSize, transactions, nil, nil)
 	}
-	fmt.Printf("\noldValueByte1 = %s, oldValueByte2 = %s\nfinalValue1 = %s, finalValue2 = %s",oldValueByte1,oldValueByte2,finalValue1,finalValue2)
 }
 
 func createTransaction(args []string, chaincodeID string) (*protos.Transaction, error) {
@@ -86,4 +90,64 @@ func CreateNilBlock(){
 			fmt.Println("Инициализация блока прошла успешно!")
 		}
 	}
+}
+
+func ReadTransaction(idx string){
+	var payload Payload
+	var firstKey, secondKey string
+	var chaincodeID		ChaincodeID
+
+
+	ledger,_ := ledger.GetLedger()
+
+	transaction, err := ledger.GetTransactionByID(idx)
+	fmt.Printf("\nerr = %s\n", err)
+
+	blockNumber := util.GetBlockNumberByTransaction(idx)
+
+	fmt.Printf("\nblockNumber = %d\n", blockNumber)
+	err = json.Unmarshal(transaction.Payload,&payload)
+	fmt.Printf("\nerr = %s\n", err)
+	err = json.Unmarshal(transaction.ChaincodeID,&chaincodeID)
+	fmt.Printf("\nerr = %s\n", err)
+
+	args := payload.ChaincodeSpec.CtorMsg.Args
+	for i,arg := range args{
+		str,_ := base64.StdEncoding.DecodeString(arg)
+		args[i] = string(str)
+	}
+	fmt.Printf("\nargs = %v\n", args)
+
+	firstKey = util.GenerateKey(args[0],args[1])
+	if len(args)> 3{
+		secondKey = util.GenerateKey(args[0],args[2])
+	}
+	fmt.Printf("\nfirstKey = %v\nsecondKey = %v\n", firstKey,secondKey)
+
+	hashFunction := fnvHash
+	conf := &config{hashFunc:hashFunction}
+
+	compositeKey1 := statemgmt.ConstructCompositeKey(chaincodeID.Name, firstKey)
+	compositeKey2 := statemgmt.ConstructCompositeKey(chaincodeID.Name, secondKey)
+
+	bucketHash := conf.computeBucketHash(compositeKey1)
+	bucketHash2 := conf.computeBucketHash(compositeKey2)
+
+	bucketNumber := int(bucketHash)%1000003 + 1
+	bucketNumber2 := int(bucketHash2)%1000003 + 1
+
+	dataKey2	:= &dataKey{&bucketKey{9, bucketNumber2},compositeKey2}
+	dataKey		:= &dataKey{&bucketKey{9, bucketNumber},compositeKey1}
+
+	openchainDB := db.GetDBHandle()
+	nodeBytes, err := openchainDB.GetFromStateCFForBlockNumber(dataKey.getEncodedBytes(),blockNumber)
+	nodeBytes2, err := openchainDB.GetFromStateCFForBlockNumber(dataKey2.getEncodedBytes(),blockNumber)
+
+	finalHash := computeCryptoHash(chaincodeID.Name,firstKey,nodeBytes)
+	finalHash2 := computeCryptoHash(chaincodeID.Name,secondKey,nodeBytes2)
+
+	fmt.Printf("finalHash = %x\n",finalHash)
+	fmt.Printf("finalHash2 = %x\n",finalHash2)
+
+
 }

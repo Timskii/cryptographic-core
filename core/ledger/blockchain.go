@@ -51,10 +51,9 @@ var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
 	var err error
-	fmt.Printf("\nblockchqin.go  newBlockchain ")
 	//size, err := fetchBlockchainSizeFromDB()
-	size := ut.GetBlocchainSize()
-	fmt.Printf("\nblockchqin.go  newBlockchain size: %v\n",size)
+	size := ut.GetBlockhainSize()
+	fmt.Printf("\nblockchain.go  newBlockchain size: %v\n",size)
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +61,13 @@ func newBlockchain() (*blockchain, error) {
 	blockchain.size = size
 	if size > 0 {
 		previousBlock, err := fetchBlockFromDB(size-1)
-		fmt.Printf("blockchqin.go newBlockchain fetchBlockFromDB err: %v\n",err)
-		fmt.Printf("blockchqin.go newBlockchain fetchBlockFromDB previousBlock: %#v\n",previousBlock)
+		fmt.Printf("blockchain.go newBlockchain fetchBlockFromDB previousBlock: %+v\n",previousBlock)
 		if err != nil {
 			return nil, err
 		}
 		previousBlockHash, err := previousBlock.GetHash()
-		fmt.Printf("\nblockchqin.go GetHash err: %v\n",err)
-		fmt.Printf("blockchqin.go previousBlockHash : %s\n",previousBlockHash)
-		fmt.Printf("blockchqin.go previousBlockHash : %#v\n",previousBlockHash)
+		fmt.Printf("blockchain.go previousBlockHash : %x\n",previousBlockHash)
+		fmt.Printf("blockchain.go previousBlockHash : %#v\n",previousBlockHash)
 		if err != nil {
 			return nil, err
 		}
@@ -281,8 +278,7 @@ func (blockchain *blockchain) persistRawBlock(block *protos.Block, blockNumber u
 
 func fetchBlockFromDB(blockNumber uint64) (*protos.Block, error) {
 	blockBytes, err := db.GetDBHandle().GetFromBlockchainCF(encodeBlockNumberDBKey(blockNumber))
-	fmt.Printf("blockchqin.go fetchBlockFromDB blockBytes = %#v\n",string(blockBytes))
-	fmt.Printf("blockchqin.go fetchBlockFromDB err = %#v\n",err)
+	fmt.Printf("blockchain.go fetchBlockFromDB blockBytes = %#v\n",string(blockBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +296,7 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if bytes == nil || len(bytes) < 2 {
 		return 0, nil
 	}
-	fmt.Printf("blockchqin.go fetchBlockchainSizeFromDB bytes = %v \nblockchqin.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))
+	fmt.Printf("blockchain.go fetchBlockchainSizeFromDB bytes = %v \nblockchain.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))
 	return decodeToUint64(bytes), nil
 }
 

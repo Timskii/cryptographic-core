@@ -8,7 +8,7 @@
     },
     "ctorMsg" : {
       "function" : "transfer",
-      "args" : [ "TEST00BLOCK", "first_user", "second_user", "2" ]
+      "args" : [ "TEST00BLOCK",  "second_user", "first_user", "2" ]
     }
   },
   "id" : 1
@@ -22,7 +22,7 @@
     },
     "ctorMsg" : {
       "function" : "transfer",
-      "args" : [ "TEST00BLOCK", "third_user", "fourth_user", "3" ]
+      "args" : [ "TEST00BLOCK",  "fourth_user","third_user", "3" ]
     }
   },
   "id" : 2
@@ -36,7 +36,7 @@
     },
     "ctorMsg" : {
       "function" : "transfer",
-      "args" : [ "TEST00BLOCK", "fifth_user", "sixth_user", "1" ]
+      "args" : [ "TEST00BLOCK",  "sixth_user", "fifth_user","1" ]
     }
   },
   "id" : 3
@@ -50,7 +50,7 @@
     },
     "ctorMsg" : {
       "function" : "transfer",
-      "args" : [ "TEST00BLOCK", "second_user", "fifth_user", "1" ]
+      "args" : [ "TEST00BLOCK",  "fifth_user","second_user", "1" ]
     }
   },
   "id" : 4
@@ -64,7 +64,7 @@
     },
     "ctorMsg" : {
       "function" : "transfer",
-      "args" : [ "TEST00BLOCK", "first_user", "sixth_user", "5" ]
+      "args" : [ "TEST00BLOCK",  "sixth_user", "first_user","5" ]
     }
   },
   "id" : 5
