@@ -25,7 +25,7 @@ import (
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/util"
 
-	ut "github.com/hyperledger/fabric/util"
+	//ut "github.com/hyperledger/fabric/util"
 
 	"github.com/hyperledger/fabric/protos"
 	"github.com/tecbot/gorocksdb"
@@ -51,9 +51,9 @@ var indexBlockDataSynchronously = true
 
 func newBlockchain() (*blockchain, error) {
 	var err error
-	//size, err := fetchBlockchainSizeFromDB()
-	size := ut.GetBlockhainSize()
-	fmt.Printf("\nblockchain.go  newBlockchain size: %v\n",size)
+	size, err := fetchBlockchainSizeFromDB()
+	//size := ut.GetBlockhainSize()
+	//fmt.Printf("\nblockchain.go  newBlockchain size: %v\n",size)
 	if err != nil {
 		return nil, err
 	}
@@ -61,13 +61,11 @@ func newBlockchain() (*blockchain, error) {
 	blockchain.size = size
 	if size > 0 {
 		previousBlock, err := fetchBlockFromDB(size-1)
-		fmt.Printf("blockchain.go newBlockchain fetchBlockFromDB previousBlock: %+v\n",previousBlock)
 		if err != nil {
 			return nil, err
 		}
 		previousBlockHash, err := previousBlock.GetHash()
 		fmt.Printf("blockchain.go previousBlockHash : %x\n",previousBlockHash)
-		fmt.Printf("blockchain.go previousBlockHash : %#v\n",previousBlockHash)
 		if err != nil {
 			return nil, err
 		}
@@ -278,7 +276,7 @@ func (blockchain *blockchain) persistRawBlock(block *protos.Block, blockNumber u
 
 func fetchBlockFromDB(blockNumber uint64) (*protos.Block, error) {
 	blockBytes, err := db.GetDBHandle().GetFromBlockchainCF(encodeBlockNumberDBKey(blockNumber))
-	fmt.Printf("blockchain.go fetchBlockFromDB blockBytes = %#v\n",string(blockBytes))
+	//fmt.Printf("blockchain.go fetchBlockFromDB blockBytes = %#v\n",string(blockBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +291,7 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if bytes == nil || len(bytes) < 2 {
+	if bytes == nil || len(bytes) < 1 {
 		return 0, nil
 	}
 	fmt.Printf("blockchain.go fetchBlockchainSizeFromDB bytes = %v \nblockchain.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))

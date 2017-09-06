@@ -25,9 +25,11 @@ func GetBlockhainSize() uint64{
 	var blockDbs []BlockDb
 
 	dataCount, _ := ioutil.ReadFile(db_blocks)
-	fileS := "[" + strings.TrimRight(string(dataCount),",\n") + "]"
-	json.Unmarshal([]byte(fileS), &blockDbs)
-	blockCount = uint64(len(blockDbs))
+	if dataCount != nil {
+		fileS := "[" + strings.TrimRight(string(dataCount), ",\n") + "]"
+		json.Unmarshal([]byte(fileS), &blockDbs)
+		blockCount = uint64(len(blockDbs))
+	}
 	return blockCount
 }
 
@@ -51,13 +53,11 @@ func GetBlockNumberByTransaction(idx string) int{
 
 func PrintData(data []byte,filename string){
 	//dat := time.Now()
-	//filename := "db"//"github.com/hyperledger/fabric/db" //dat.Format("20060102")
-
 	file, _ := os.OpenFile(filename+".txt",os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	defer file.Close()
-
 	_, _ = file.Write(data)
 }
+
 
 func PrintDataBlock(block protos.Block){
 	var blockDb BlockDb

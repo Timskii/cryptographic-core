@@ -1,0 +1,17 @@
+[
+  {
+  "jsonrpc" : "2.0",
+  "method" : "invoke",
+  "params" : {
+    "type" : 1,
+    "chaincodeID" : {
+      "name" : "76dd42df57d7bf4f2dad79b566ce803d45150f7999255c10b93a20ebd2b39d569b36aae0f1fa8c81477dd525e0b923fa441996418a8e73d1b84d1e1cf6b3665f"
+    },
+    "ctorMsg" : {
+      "function" : "transfer",
+      "args" : [ "TEST00BLOCK",  "sixth_user", "first_user","5" ]
+    }
+  },
+  "id" : 5
+}
+]

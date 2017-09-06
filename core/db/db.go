@@ -26,6 +26,7 @@ import (
 	"github.com/op/go-logging"
 	"github.com/spf13/viper"
 	"github.com/tecbot/gorocksdb"
+	"bytes"
 )
 
 var dbLogger = logging.MustGetLogger("db")
@@ -79,7 +80,7 @@ func Stop() {
 // GetFromBlockchainCF get value for given key from column family - blockchainCF
 func (openchainDB *OpenchainDB) GetFromBlockchainCF(key []byte) ([]byte, error) {
 	openchainDB.BlockchainCF = &gorocksdb.ColumnFamilyHandle{}
-	openchainDB.BlockchainCF.Type = gorocksdb.Blockchain
+	if bytes.Equal(key,[]byte("blockCount")){openchainDB.BlockchainCF.Type = 1}else{openchainDB.BlockchainCF.Type = gorocksdb.Blockchain}
 	return openchainDB.Get(openchainDB.BlockchainCF, key,0)
 }
 
@@ -194,12 +195,11 @@ func (openchainDB *OpenchainDB) DeleteState() error {
 func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte, blockNumber int) ([]byte, error) {
 
 	slice, _ := openchainDB.DB.GetCF( cfHandler, key, blockNumber)
-	fmt.Printf("core/db Get slice %#v\n", slice)
 	if slice.Data() == nil {
 		return nil, nil
 	}
 	data := makeCopy(slice.Data())
-	if len(data) < 2 {
+	if len(data) < 1 {
 		return nil,nil
 	}
 	return data, nil	// TIM get from file

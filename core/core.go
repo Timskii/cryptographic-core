@@ -15,6 +15,8 @@ import (
 	"github.com/hyperledger/fabric/core/db"
 //	"github.com/golang/protobuf/proto"
 	"bytes"
+	"io/ioutil"
+	"os"
 )
 
 func AddData (jsonobject []*Jsonobject){
@@ -105,7 +107,6 @@ func ReadTransaction(idx string){
 
 
 	ledger,_ := ledger.GetLedger()
-
 	transaction, _ := ledger.GetTransactionByID(idx)
 	if transaction != nil {
 		fmt.Printf("Транзакция с id <%s> = %s\n",idx,transaction)
@@ -134,12 +135,6 @@ func ReadTransaction(idx string){
 		}else{
 			fmt.Println("Транзакция не корректна!")
 		}
-	/*	if len(args) > 3 {
-			hashTransaction2, bucketKey2 = getHashFromStates(args[0], args[2], chaincodeID, blockNumber)
-			hashDB2 = getHashFromDB(bucketKey2, blockNumber)
-			fmt.Printf("\nХэш от транзакции = %x\nХэш из базы данных = %x", hashTransaction2, hashDB2)
-		}
-		fmt.Printf("\nХэш от транзакции = %x\nХэш из базы данных = %x", hashTransaction, hashDB)*/
 	}else{
 		fmt.Printf("Транзакция с id <%s> не найдена!",idx)
 	}
@@ -174,4 +169,50 @@ func getHashFromDB (bucketKey *bucketKey, blockNumber int) []byte{
 	hashDB ,_ := openchainDB.GetFromStateCFForBlockNumber(hashDBKey,blockNumber)
 
 	return unmarshalCryptoHash(hashDB)
+}
+
+func TestValidAllBlocks(){
+
+	var previousBlockHash []byte
+	ledger,_ := ledger.GetLedger()
+	//size := util.GetBlockhainSize()
+	size := ledger.GetBlockchainSize()
+	fmt.Printf("size = %d\n",size)
+
+	blockNil := new(protos.Block)
+	blockNil.NonHashData = &protos.NonHashData{LocalLedgerCommitTimestamp: ut.CreateUtcTimestamp()}
+
+	for i:= 1; i<int(size); i++{
+		fmt.Printf(	"\n--------------------------------"+
+							"\nОбработка блока с номером %d",i)
+		block, _ := ledger.GetBlockByNumber(uint64(i))
+		if i == 1{
+			previousBlockHash,_ = blockNil.GetHash()
+		}else {
+			previousBlock, _ := ledger.GetBlockByNumber(uint64(i - 1))
+			previousBlockHash, _ = previousBlock.GetHash()
+		}
+		fmt.Printf("\nХэш блока       = %x",previousBlockHash)
+		fmt.Printf("\nХэш блока из БД = %x",block.PreviousBlockHash)
+		if bytes.Equal(previousBlockHash,block.PreviousBlockHash){
+			fmt.Printf("\nБлок валидный")
+		}else{
+			fmt.Printf("\nБлок не валидный!")
+		}
+	}
+}
+
+func Checksum(){
+	fileData,_ := ioutil.ReadFile("main.exe")
+	hashFile := fileData[(len(fileData)-64):]
+	fileData = fileData[:(len(fileData)-64)]
+	hash := ut.ComputeCryptoHash(fileData)
+	fmt.Printf("hash     = %x\n",hash)
+	fmt.Printf("hashFile = %x\n",hashFile)
+	if !bytes.Equal(hash,hashFile) {
+		fmt.Printf("Внимание, контрольная сумма не прошла!")
+		os.Exit(1)
+	}else{
+		fmt.Printf("Контрольная сумма прошла успешно.")
+	}
 }

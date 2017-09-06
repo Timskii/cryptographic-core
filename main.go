@@ -7,6 +7,7 @@ import (
 	"strings"
 	"github.com/hyperledger/fabric/core"
 
+	"time"
 )
 func readFile (fileName string){
 	fmt.Printf("readFile start\n")
@@ -31,8 +32,9 @@ func readTransaction(id string){
 	}
 }
 func testBlock(){
-	fmt.Println("Test begin")
-	fmt.Println("Test end")
+	fmt.Println("Test begin ", time.Now())
+	core.TestValidAllBlocks()
+	fmt.Println("Test end ",time.Now())
 }
 
 func main(){
@@ -46,5 +48,7 @@ func main(){
 		readTransaction(os.Args[2])
 	} else if strings.Compare(method,"t")==0 {
 		testBlock()
+	} else if strings.Compare(method,"checksum")==0{
+		core.Checksum()
 	}
 }

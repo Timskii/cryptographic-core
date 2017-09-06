@@ -1,7 +1,7 @@
 package gorocksdb
 
 import(
-    "os"
+//"os"
     "fmt"
     "encoding/json"
 //    "bytes"
@@ -270,46 +270,47 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slic
 	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
-		os.Exit(1)
-	}
-	fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
-	fileS = strings.Replace(fileS,"}{","},{",-1)
+		//os.Exit(1)
+	}else{
+		fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
+		fileS = strings.Replace(fileS,"}{","},{",-1)
 
-	var jsontype []*DataJson
-	block := &protos.Block{}
-	json.Unmarshal([]byte(fileS), &jsontype)
+		var jsontype []*DataJson
+		block := &protos.Block{}
+		json.Unmarshal([]byte(fileS), &jsontype)
 
-	fmt.Printf("\ngorocksdb/db GetCF key: %#v\n", key)
-	fmt.Printf("gorocksdb/db GetCF key: %x\n", key)
-	if blockNumber != 0 {
-		fmt.Printf("gorocksdb/db blockNumber: %d\n", blockNumber)
-		for i := 0; i< len(jsontype);  i++ {
-			if bytes.Equal(key, jsontype[i].Key) {
-				countNumber++
-				if  countNumber == (blockNumber) {
+		/*fmt.Printf("\ngorocksdb/db GetCF key: %#v\n", key)
+		fmt.Printf("gorocksdb/db GetCF key: %x\n", key)*/
+		if blockNumber != 0 {
+			//fmt.Printf("gorocksdb/db blockNumber: %d\n", blockNumber)
+			for i := 0; i< len(jsontype);  i++ {
+				if bytes.Equal(key, jsontype[i].Key) {
+					countNumber++
+					if  countNumber == (blockNumber) {
+							cValue = jsontype[i].Value
+							cValLen = len(jsontype[i].Value)
+							break
+					}
+				}
+			}
+		}else {
+			for i := len(jsontype) - 1; i > 0; i-- {
+				if cf.Type == Blockchain {
+					block = nil
+					json.Unmarshal(jsontype[i].Value, &block)
+				}
+				if bytes.Equal(key, jsontype[i].Key) {
+					if (cf.Type == Blockchain && block != nil) || cf.Type != Blockchain {
+
 						cValue = jsontype[i].Value
-						cValLen = i
+						cValLen = len(jsontype[i].Value)
 						break
-				}
-			}
-		}
-	}else {
-		for i := len(jsontype) - 1; i > 0; i-- {
-			if cf.Type == Blockchain {
-				block = nil
-				json.Unmarshal(jsontype[i].Value, &block)
-			}
-			if bytes.Equal(key, jsontype[i].Key) {
-				if (cf.Type == Blockchain && block != nil) || cf.Type != Blockchain {
-
-					cValue = jsontype[i].Value
-					cValLen = i
-					break
+					}
 				}
 			}
 		}
 	}
-	fmt.Printf("gorocksdb/db GetCF cValLen: %s\ngorocksdb/db GetCF cValue = %x\n", cValLen,cValue)
+	//fmt.Printf("gorocksdb/db GetCF cValLen: %s\ngorocksdb/db GetCF cValue = %x\n", cValLen,cValue)
 	return NewSlice(string(cValue), cValLen), nil
 }
 /*
