@@ -247,7 +247,6 @@ func (updatedValue *UpdatedValue) GetPreviousValue() []byte {
 
 // Marshal serializes the StateDelta
 func (stateDelta *StateDelta) Marshal() (b []byte) {
-	fmt.Printf("\n Marshal stateDelta = %+v \n", stateDelta)
 	buffer := proto.NewBuffer([]byte{})
 	err := buffer.EncodeVarint(uint64(len(stateDelta.ChaincodeStateDeltas)))
 	if err != nil {

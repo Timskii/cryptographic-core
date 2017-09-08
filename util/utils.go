@@ -4,14 +4,14 @@ import (
 		"os"
 		"strconv"
 		"encoding/json"
+		"io/ioutil"
+		"strings"
 
-		//"github.com/hyperledger/fabric/protos"
 		"github.com/hyperledger/fabric/protos"
-		//"time"
-
-	"io/ioutil"
-	"strings"
+		"github.com/op/go-logging"
 )
+
+var logger = logging.MustGetLogger("utils.go")
 
 type BlockDb struct {
 	Height	uint64 			`json:"heigth"`
@@ -19,7 +19,7 @@ type BlockDb struct {
 
 }
 var db_blocks string = "db_blocks.txt"
-
+/*
 func GetBlockhainSize() uint64{
 	var blockCount uint64 = 0
 	var blockDbs []BlockDb
@@ -31,7 +31,7 @@ func GetBlockhainSize() uint64{
 		blockCount = uint64(len(blockDbs))
 	}
 	return blockCount
-}
+}*/
 
 func GetBlockNumberByTransaction(idx string) int{
 	var blockNumber int = 0
@@ -59,18 +59,13 @@ func PrintData(data []byte,filename string){
 }
 
 
-func PrintDataBlock(block protos.Block){
+func PrintDataBlock(block protos.Block, size uint64){
 	var blockDb BlockDb
 
-	blockDb.Height = GetBlockhainSize()
+	blockDb.Height = size
 	blockDb.Block = block
-
 	data,_ := json.Marshal(blockDb)
-	data = append(data,[]byte(",\n")...)
-	file, _ := os.OpenFile(db_blocks,os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	defer file.Close()
-
-	_, _ = file.Write(data)
+	logger.Debugf("%s\n",string(data))
 }
 
 func GenerateKey(value1, value2 string) string {

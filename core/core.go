@@ -3,20 +3,18 @@ package core
 import (
 		"fmt"
 		"strconv"
+		"encoding/json"
+		"encoding/base64"
+		"bytes"
+		"io/ioutil"
+		"os"
 
 		"github.com/hyperledger/fabric/util"
 		"github.com/hyperledger/fabric/core/ledger"
 		ut "github.com/hyperledger/fabric/core/util"
 		"github.com/hyperledger/fabric/protos"
-
-	"encoding/json"
-	"encoding/base64"
-	"github.com/hyperledger/fabric/core/ledger/statemgmt"
-	"github.com/hyperledger/fabric/core/db"
-//	"github.com/golang/protobuf/proto"
-	"bytes"
-	"io/ioutil"
-	"os"
+		"github.com/hyperledger/fabric/core/ledger/statemgmt"
+		"github.com/hyperledger/fabric/core/db"
 )
 
 func AddData (jsonobject []*Jsonobject){
@@ -91,7 +89,7 @@ func CreateNilBlock(){
 		if makeGenesisError != nil {
 			fmt.Printf("Внимание! во время инициализации блока возникла ошибка: %+v\n", makeGenesisError)
 		}else{
-			fmt.Println("Инициализация блока прошла успешно!")
+			fmt.Println("Инициализация базы данных прошла успешно!")
 		}
 	}
 }
@@ -104,7 +102,6 @@ func ReadTransaction(idx string){
 	var hash,hashDB,state []byte
 	var bucketKey *bucketKey
 	var isValid bool = true
-
 
 	ledger,_ := ledger.GetLedger()
 	transaction, _ := ledger.GetTransactionByID(idx)
@@ -167,24 +164,19 @@ func getHashFromDB (bucketKey *bucketKey, blockNumber int) []byte{
 	bucketKey.bucketNumber = computeBucketNumber(bucketKey.bucketNumber)
 	hashDBKey := bucketKey.getEncodedBytes()
 	hashDB ,_ := openchainDB.GetFromStateCFForBlockNumber(hashDBKey,blockNumber)
-
 	return unmarshalCryptoHash(hashDB)
 }
 
 func TestValidAllBlocks(){
-
 	var previousBlockHash []byte
 	ledger,_ := ledger.GetLedger()
-	//size := util.GetBlockhainSize()
+	var countErrBlocks int =0
 	size := ledger.GetBlockchainSize()
-	fmt.Printf("size = %d\n",size)
 
 	blockNil := new(protos.Block)
 	blockNil.NonHashData = &protos.NonHashData{LocalLedgerCommitTimestamp: ut.CreateUtcTimestamp()}
 
 	for i:= 1; i<int(size); i++{
-		fmt.Printf(	"\n--------------------------------"+
-							"\nОбработка блока с номером %d",i)
 		block, _ := ledger.GetBlockByNumber(uint64(i))
 		if i == 1{
 			previousBlockHash,_ = blockNil.GetHash()
@@ -192,13 +184,17 @@ func TestValidAllBlocks(){
 			previousBlock, _ := ledger.GetBlockByNumber(uint64(i - 1))
 			previousBlockHash, _ = previousBlock.GetHash()
 		}
-		fmt.Printf("\nХэш блока       = %x",previousBlockHash)
-		fmt.Printf("\nХэш блока из БД = %x",block.PreviousBlockHash)
-		if bytes.Equal(previousBlockHash,block.PreviousBlockHash){
-			fmt.Printf("\nБлок валидный")
-		}else{
-			fmt.Printf("\nБлок не валидный!")
+		if !bytes.Equal(previousBlockHash,block.PreviousBlockHash){
+			countErrBlocks++
+			fmt.Printf("E")
+		} else {
+			fmt.Printf(".")
 		}
+	}
+	if countErrBlocks > 0 {
+		fmt.Printf("\nВнимание, выявлено %d невалидных блоков!",countErrBlocks)
+	}else{
+		fmt.Printf("\nВсе %d блок(-ов) успешно прошли проверку на валидность.", size-1)
 	}
 }
 
@@ -207,12 +203,8 @@ func Checksum(){
 	hashFile := fileData[(len(fileData)-64):]
 	fileData = fileData[:(len(fileData)-64)]
 	hash := ut.ComputeCryptoHash(fileData)
-	fmt.Printf("hash     = %x\n",hash)
-	fmt.Printf("hashFile = %x\n",hashFile)
 	if !bytes.Equal(hash,hashFile) {
-		fmt.Printf("Внимание, контрольная сумма не прошла!")
+		fmt.Printf("Внимание, выявлено несанкционированное изменение программы!")
 		os.Exit(1)
-	}else{
-		fmt.Printf("Контрольная сумма прошла успешно.")
 	}
 }

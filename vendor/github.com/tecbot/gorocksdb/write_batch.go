@@ -1,9 +1,13 @@
 package gorocksdb
 
 import "io"
-import "fmt"
 import "encoding/json"
-import "github.com/hyperledger/fabric/util"
+import (
+	"github.com/hyperledger/fabric/util"
+	"github.com/op/go-logging"
+)
+
+var logger = logging.MustGetLogger("writeBatch")
 
 // WriteBatch is a batching of Puts, Merges and Deletes.
 type WriteBatch struct {
@@ -13,12 +17,12 @@ type ColumnFamilyHandle struct {
 	Type int
 }
 
-
-
 const (
-	Blockchain int = 0
+	BLOCKCHAIN 	int = 0
+	STATE		int = 1
+	STATEDELTA	int = 2
+	INDEXES		int = 3
 )
-
 
 // NewWriteBatch create a WriteBatch object.
 func NewWriteBatch() *WriteBatch {
@@ -32,13 +36,13 @@ func WriteBatchFrom(data []byte) *WriteBatch {
 
 // Put queues a key-value pair.
 func (wb *WriteBatch) Put(key, value []byte) {
-	fmt.Printf("Put \n")
+	logger.Debugf("Put \n")
 }
 
 // PutCF queues a key-value pair in a column family.
 func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
-	fmt.Printf("\nWriteBatch PutCF value:%x \nWriteBatch PutCF key:%x\n",value,key)
-	fmt.Printf("WriteBatch PutCF value:%s \nWriteBatch PutCF key:%v\n",value,key)
+	logger.Debugf("\nWriteBatch PutCF value:%x \nWriteBatch PutCF key:%x\n",value,key)
+	logger.Debugf("WriteBatch PutCF value:%s \nWriteBatch PutCF key:%v\n",value,key)
 	dataJson := new(DataJson)
 	dataJson.Key = key
 	dataJson.Value = value
@@ -49,26 +53,20 @@ func (wb *WriteBatch) PutCF(cf *ColumnFamilyHandle, key, value []byte) {
 
 // Merge queues a merge of "value" with the existing value of "key".
 func (wb *WriteBatch) Merge(key, value []byte) {
-	fmt.Printf("gorocksdb/writeBatch Merge \n")
+	logger.Debugf("gorocksdb/writeBatch Merge \n")
 }
 
-// MergeCF queues a merge of "value" with the existing value of "key" in a
-// column family.
-func (wb *WriteBatch) MergeCF(cf *ColumnFamilyHandle, key, value []byte) {
-
-	fmt.Printf("gorocksdb/writeBatch MergeCF \n")
-}
 
 // Delete queues a deletion of the data at key.
 func (wb *WriteBatch) Delete(key []byte) {
 
-	fmt.Printf("gorocksdb/writeBatch Delete \n")
+	logger.Debugf("gorocksdb/writeBatch Delete \n")
 }
 
 // DeleteCF queues a deletion of the data at key in a column family.
 func (wb *WriteBatch) DeleteCF(cf *ColumnFamilyHandle, key []byte) {
 
-	fmt.Printf("gorocksdb/writeBatch DeleteCF \n")
+	logger.Debugf("gorocksdb/writeBatch DeleteCF \n")
 }
 
 // Data returns the serialized version of this batch.
@@ -91,14 +89,10 @@ func (wb *WriteBatch) NewIterator() *WriteBatchIterator {
 	return &WriteBatchIterator{data: data[12:]}
 }
 
-// Clear removes all the enqueued Put and Deletes.
-func (wb *WriteBatch) Clear() {
-	fmt.Printf("gorocksdb/writeBatch Clear \n")
-}
 
 // Destroy deallocates the WriteBatch object.
 func (wb *WriteBatch) Destroy() {
-	fmt.Printf("gorocksdb/writeBatch Destroy \n")
+
 	
 }
 

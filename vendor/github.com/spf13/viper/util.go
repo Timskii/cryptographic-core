@@ -21,7 +21,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/BurntSushi/toml"
 	"github.com/magiconair/properties"
 	"github.com/spf13/cast"
 	jww "github.com/spf13/jwalterweatherman"
@@ -141,11 +140,6 @@ func unmarshallConfigReader(in io.Reader, c map[string]interface{}, configType s
 
 	case "json":
 		if err := json.Unmarshal(buf.Bytes(), &c); err != nil {
-			return ConfigParseError{err}
-		}
-
-	case "toml":
-		if _, err := toml.Decode(buf.String(), &c); err != nil {
 			return ConfigParseError{err}
 		}
 

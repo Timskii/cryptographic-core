@@ -53,15 +53,9 @@ func EncodeOrderPreservingVarUint64(number uint64) []byte {
 // DecodeOrderPreservingVarUint64 decodes the number from the bytes obtained from method 'EncodeOrderPreservingVarUint64'.
 // Also, returns the number of bytes that are consumed in the process
 func DecodeOrderPreservingVarUint64(bytes []byte) (uint64, int) {
-	fmt.Printf("DecodeOrderPreservingVarUint64: bytes %v\n value bytes %v\n", bytes, string(bytes))
 	s, _ := proto.DecodeVarint(bytes)
 	size := int(s)
-
-	fmt.Printf("DecodeOrderPreservingVarUint64: size %d\n",size)
-	fmt.Printf("DecodeOrderPreservingVarUint64: s %v\n",s)
-
 	decodedBytes := make([]byte, 8)
-	fmt.Printf("DecodeOrderPreservingVarUint64: decodedBytes %v\n",decodedBytes)
 	copy(decodedBytes[8-size:], bytes[1:size+1])
 	numBytesConsumed := size + 1
 	return binary.BigEndian.Uint64(decodedBytes), numBytesConsumed

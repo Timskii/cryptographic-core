@@ -18,7 +18,6 @@ package buckettree
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/ledger/statemgmt"
@@ -119,9 +118,6 @@ func (stateImpl *StateImpl) ComputeCryptoHash() ([]byte, error) {
 			return nil, err
 		}
 		stateImpl.lastComputedCryptoHash = stateImpl.computeRootNodeCryptoHash()
-		fmt.Printf("\nstateImpl.lastComputedCryptoHash = [%x]",stateImpl.lastComputedCryptoHash)
-		fmt.Printf("\nstateImpl.lastComputedCryptoHash = [%#v]",stateImpl.lastComputedCryptoHash)
-		fmt.Printf("\nstateImpl.lastComputedCryptoHash = [%+v]\n",stateImpl.lastComputedCryptoHash)
 		stateImpl.recomputeCryptoHash = false
 	} else {
 		logger.Debug("Returing existing crypto-hash as recomputation not required")
@@ -180,7 +176,6 @@ func (stateImpl *StateImpl) computeRootNodeCryptoHash() []byte {
 
 func computeDataNodesCryptoHash(bucketKey *bucketKey, updatedNodes dataNodes, existingNodes dataNodes) []byte {
 	logger.Debugf("Computing crypto-hash for bucket [%s]. numUpdatedNodes=[%d], numExistingNodes=[%d]", bucketKey, len(updatedNodes), len(existingNodes))
-	fmt.Printf("\nupdatedNodes=[%s]\nexistingNodes=[%s]",updatedNodes,existingNodes)
 	bucketHashCalculator := newBucketHashCalculator(bucketKey)
 	i := 0
 	j := 0
@@ -250,7 +245,6 @@ func (stateImpl *StateImpl) addDataNodeChangesForPersistence(writeBatch *gorocks
 				writeBatch.DeleteCF(openchainDB.StateCF, dataNode.dataKey.getEncodedBytes())
 			} else {
 				logger.Debugf("Adding data node with value = %#v", dataNode.value)
-				fmt.Printf("State_impl addDataNodeChangesForPersistence value = %#v", dataNode.value)
 				writeBatch.PutCF(openchainDB.StateCF, dataNode.dataKey.getEncodedBytes(), dataNode.value)
 			}
 		}
@@ -266,8 +260,6 @@ func (stateImpl *StateImpl) addBucketNodeChangesForPersistence(writeBatch *goroc
 			if bucketNode.markedForDeletion {
 				writeBatch.DeleteCF(openchainDB.StateCF, bucketNode.bucketKey.getEncodedBytes())
 			} else {
-				fmt.Printf("State_impl addBucketNodeChangesForPersistence value = %#v\n", bucketNode)
-				fmt.Printf("State_impl addBucketNodeChangesForPersistence value = %s\n", bucketNode)
 				writeBatch.PutCF(openchainDB.StateCF, bucketNode.bucketKey.getEncodedBytes(), bucketNode.marshal())
 			}
 		}

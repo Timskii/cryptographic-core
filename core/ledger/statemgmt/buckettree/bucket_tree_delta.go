@@ -16,8 +16,6 @@ limitations under the License.
 
 package buckettree
 
-import "fmt"
-
 type byBucketNumber map[int]*bucketNode
 
 type bucketTreeDelta struct {
@@ -55,8 +53,6 @@ func (bucketTreeDelta *bucketTreeDelta) getBucketNodesAt(level int) []*bucketNod
 	for _, bucketNode := range byBucketNumber {
 		bucketNodes = append(bucketNodes, bucketNode)
 	}
-	fmt.Printf("getBucketNodesAt bucketNodes+ = [%+v]\n",bucketNodes)
-	fmt.Printf("getBucketNodesAt bucketTreeDelta+ = [%+v]\n",*bucketTreeDelta)
 	return bucketNodes
 }
 

@@ -80,7 +80,6 @@ func addIndexDataForPersistence(block *protos.Block, blockNumber uint64, blockHa
 
 	// add blockhash -> blockNumber
 	indexLogger.Debugf("Indexing block number [%d] by hash = [%x]", blockNumber, blockHash)
-	fmt.Printf("blockchain_indexes.go addIndexDataForPersistence encodeBlockNumber(blockNumber) = [%#v]",string(encodeBlockNumber(blockNumber)))
 	//writeBatch.PutCF(cf, encodeBlockHashKey(blockHash), encodeBlockNumber(blockNumber))
 
 	addressToTxIndexesMap := make(map[string][]uint64)

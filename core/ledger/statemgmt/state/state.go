@@ -155,19 +155,15 @@ func (state *State) Set(chaincodeID string, key string, value []byte) error {
 	if state.currentTxStateDelta.IsUpdatedValueSet(chaincodeID, key) {
 		// No need to bother looking up the previous value as we will not
 		// set it again. Just pass nil
-		fmt.Printf("state.go IsUpdateValueSet = true\n")
 		state.currentTxStateDelta.Set(chaincodeID, key, value, nil)
 	} else {
 		// Need to lookup the previous value
-		fmt.Printf("state.go IsUpdateValueSet = false\n")
 		previousValue, err := state.Get(chaincodeID, key, true)
-		fmt.Printf("state.go previousValue = %v\n",previousValue)
 		if err != nil {
 			return err
 		}
 		state.currentTxStateDelta.Set(chaincodeID, key, value, previousValue)
 	}
-	fmt.Printf("state.go state.currentTxStateDelta = %v\n",state.currentTxStateDelta)
 	return nil
 }
 
@@ -302,7 +298,6 @@ func (state *State) AddChangesForPersistence(blockNumber uint64, writeBatch *gor
 	serializedStateDelta := state.stateDelta.Marshal()
 	cf := db.GetDBHandle().StateDeltaCF
 	logger.Debugf("\nAdding state-delta corresponding to block number[%d]", blockNumber)
-	fmt.Printf("\n State.go AddChangesForPersistence Adding state-delta serializedStateDelta[%#v]\n", string(serializedStateDelta))
 	writeBatch.PutCF(cf, encodeStateDeltaKey(blockNumber), serializedStateDelta)
 	if blockNumber >= state.historyStateDeltaSize {
 		blockNumberToDelete := blockNumber - state.historyStateDeltaSize

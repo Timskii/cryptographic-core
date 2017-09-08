@@ -20,13 +20,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"strconv"
-	"fmt"
 
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/util"
-
-	//ut "github.com/hyperledger/fabric/util"
-
 	"github.com/hyperledger/fabric/protos"
 	"github.com/tecbot/gorocksdb"
 	"golang.org/x/net/context"
@@ -53,7 +49,6 @@ func newBlockchain() (*blockchain, error) {
 	var err error
 	size, err := fetchBlockchainSizeFromDB()
 	//size := ut.GetBlockhainSize()
-	//fmt.Printf("\nblockchain.go  newBlockchain size: %v\n",size)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +60,6 @@ func newBlockchain() (*blockchain, error) {
 			return nil, err
 		}
 		previousBlockHash, err := previousBlock.GetHash()
-		fmt.Printf("blockchain.go previousBlockHash : %x\n",previousBlockHash)
 		if err != nil {
 			return nil, err
 		}
@@ -212,7 +206,6 @@ func (blockchain *blockchain) addPersistenceChangesForNewBlock(ctx context.Conte
 	if blockBytesErr != nil {
 		return 0, blockBytesErr
 	}
-	fmt.Printf("\nblockchain.go addPersistenceChangesForNewBlock blockBytes = [%#v]\n", string(blockBytes))
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, encodeBlockNumberDBKey(blockNumber), blockBytes)
 	writeBatch.PutCF(db.GetDBHandle().BlockchainCF, blockCountKey, encodeUint64(blockNumber+1))
 	if blockchain.indexer.isSynchronous() {
@@ -226,7 +219,6 @@ func (blockchain *blockchain) blockPersistenceStatus(success bool) {
 	if success {
 
 		blockchain.size++
-		fmt.Printf("blockPersistenceStatus blockchain.size:[%v]",blockchain.size)
 		blockchain.previousBlockHash = blockchain.lastProcessedBlock.blockHash
 		if !blockchain.indexer.isSynchronous() {
 			writeBatch := gorocksdb.NewWriteBatch()
@@ -294,7 +286,7 @@ func fetchBlockchainSizeFromDB() (uint64, error) {
 	if bytes == nil || len(bytes) < 1 {
 		return 0, nil
 	}
-	fmt.Printf("blockchain.go fetchBlockchainSizeFromDB bytes = %v \nblockchain.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))
+	//fmt.Printf("blockchain.go fetchBlockchainSizeFromDB bytes = %v \nblockchain.go fetchBlockchainSizeFromDB len = %v \n",bytes, len(bytes))
 	return decodeToUint64(bytes), nil
 }
 

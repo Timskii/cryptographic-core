@@ -12,16 +12,16 @@ import (
 
 
 func main(){
-	logging.SetLevel(logging.NOTICE, "")
+	logging.SetLevel(logging.DEBUG, "")
 	//readFileTransfer()
-	//readFileRegister()
 	//core.CreateNilBlock()
-	//testBlocks()
-	core.Checksum()
+	//readFileRegister()
+	testBlocks()
+	//core.Checksum()
 }
 
 func readFileTransfer(){
-	filename := "github.com/hyperledger/fabric/transaction_one_transfer.json"
+	filename := "github.com/hyperledger/fabric/transactions_transfer1.json"
 	file, e := ioutil.ReadFile(filename)
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)

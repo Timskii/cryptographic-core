@@ -212,7 +212,7 @@ func (ledger *Ledger) CommitTxBatch(id interface{}, transactions []*protos.Trans
 	sendChaincodeEvents(transactionResults)
 
 	//util.PrintData([]byte(fmt.Sprintf("%+v\n", *block)))
-	util.PrintDataBlock(*block)
+	util.PrintDataBlock(*block,ledger.GetBlockchainSize())
 	if len(transactionResults) != 0 {
 		ledgerLogger.Debug("There were some erroneous transactions. We need to send a 'TX rejected' message here.")
 	}
@@ -276,7 +276,6 @@ func (ledger *Ledger) GetStateRangeScanIterator(chaincodeID string, startKey str
 
 // SetState sets state to given value for chaincodeID and key. Does not immideatly writes to DB
 func (ledger *Ledger) SetState(chaincodeID string, key string, value []byte) error {
-	fmt.Printf("\nledger.go SetState key = %v\nledger.go SetState value = %v\nledger.go SetState valueS = %s\n", key, value,value)
 	if key == "" || value == nil {
 		return newLedgerError(ErrorTypeInvalidArgument,
 			fmt.Sprintf("An empty string key or a nil value is not supported. Method invoked with key='%s', value='%#v'", key, value))
@@ -507,8 +506,6 @@ func sendProducerBlockEvent(block *protos.Block) {
 	// can be very large.
 
 	blockTransactions := block.GetTransactions()
-	fmt.Printf("\nsendProducerBlockEvent block:%+v\n",block)
-	fmt.Printf("\nsendProducerBlockEvent blockTransactions:%+v\n",blockTransactions)
 	for _, transaction := range blockTransactions {
 		if transaction.Type == protos.Transaction_CHAINCODE_DEPLOY {
 			deploymentSpec := &protos.ChaincodeDeploymentSpec{}

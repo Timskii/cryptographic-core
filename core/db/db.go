@@ -80,7 +80,7 @@ func Stop() {
 // GetFromBlockchainCF get value for given key from column family - blockchainCF
 func (openchainDB *OpenchainDB) GetFromBlockchainCF(key []byte) ([]byte, error) {
 	openchainDB.BlockchainCF = &gorocksdb.ColumnFamilyHandle{}
-	if bytes.Equal(key,[]byte("blockCount")){openchainDB.BlockchainCF.Type = 1}else{openchainDB.BlockchainCF.Type = gorocksdb.Blockchain}
+	if bytes.Equal(key,[]byte("blockCount")){openchainDB.BlockchainCF.Type = 1}else{openchainDB.BlockchainCF.Type = gorocksdb.BLOCKCHAIN}
 	return openchainDB.Get(openchainDB.BlockchainCF, key,0)
 }
 
@@ -92,27 +92,27 @@ func (openchainDB *OpenchainDB) GetFromBlockchainCFSnapshot(snapshot *gorocksdb.
 // GetFromStateCF get value for given key from column family - stateCF
 func (openchainDB *OpenchainDB) GetFromStateCF(key []byte) ([]byte, error) {
 	openchainDB.StateCF = &gorocksdb.ColumnFamilyHandle{}
-	openchainDB.StateCF.Type = 1
+	openchainDB.StateCF.Type = gorocksdb.STATE
 	return openchainDB.Get(openchainDB.StateCF, key,0)
 }
 
 func (openchainDB *OpenchainDB) GetFromStateCFForBlockNumber(key []byte,blockNumber int) ([]byte, error) {
 	openchainDB.StateCF = &gorocksdb.ColumnFamilyHandle{}
-	openchainDB.StateCF.Type = 1
+	openchainDB.StateCF.Type = gorocksdb.STATE
 	return openchainDB.Get(openchainDB.StateCF, key,blockNumber)
 }
 
 // GetFromStateDeltaCF get value for given key from column family - stateDeltaCF
 func (openchainDB *OpenchainDB) GetFromStateDeltaCF(key []byte) ([]byte, error) {
 	openchainDB.StateDeltaCF = &gorocksdb.ColumnFamilyHandle{}
-	openchainDB.StateDeltaCF.Type = 2
+	openchainDB.StateDeltaCF.Type = gorocksdb.STATEDELTA
 	return openchainDB.Get(openchainDB.StateDeltaCF, key,0)
 }
 
 // GetFromIndexesCF get value for given key from column family - indexCF
 func (openchainDB *OpenchainDB) GetFromIndexesCF(key []byte) ([]byte, error) {
 	openchainDB.IndexesCF = &gorocksdb.ColumnFamilyHandle{}
-	openchainDB.IndexesCF.Type = 3
+	openchainDB.IndexesCF.Type = gorocksdb.INDEXES
 	return openchainDB.Get(openchainDB.IndexesCF, key,0)
 }
 
@@ -207,8 +207,6 @@ func (openchainDB *OpenchainDB) Get(cfHandler *gorocksdb.ColumnFamilyHandle, key
 
 // Put saves the key/value in the given column family
 func (openchainDB *OpenchainDB) Put(cfHandler *gorocksdb.ColumnFamilyHandle, key []byte, value []byte) error {
-	fmt.Printf("core/db Put key %#v\n", key)
-	fmt.Printf("core/db Put value %#v\n", value)
 	err := openchainDB.DB.PutCF(cfHandler, key, value)
 	if err != nil {
 		dbLogger.Errorf("Error while trying to write key: %s", key)

@@ -41,7 +41,6 @@ func (key *dataKey) getEncodedBytes() []byte {
 }
 
 func (bucketKey *bucketKey) getEncodedBytes() []byte {
-
 	encodedBytes := []byte{}
 	encodedBytes = append(encodedBytes, byte(0))
 	encodedBytes = append(encodedBytes, proto.EncodeVarint(uint64(bucketKey.level))...)
