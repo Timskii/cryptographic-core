@@ -1,14 +1,12 @@
 package core
 
 import (
-	"fmt"
 	"hash/fnv"
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/ledger/util"
 )
 
 func (config *config) computeBucketHash(data []byte) uint32 {
-	fmt.Printf("config data = %s\n", data)
 	return config.hashFunc(data)
 }
 const MaxGroupingAtEachLevel = 5
@@ -75,7 +73,6 @@ func computeBucketNumber (bucketNumber int) (int){
 
 func unmarshalCryptoHash(serializedBytes []byte) []byte {
 	var unmarshalCryptoHash []byte
-	fmt.Printf("serializedBytes = %x\n",serializedBytes)
 	buffer := proto.NewBuffer(serializedBytes)
 	for i := 0; i < MaxGroupingAtEachLevel; i++ {
 		cryptoHash, _ := buffer.DecodeRawBytes(false)
@@ -84,7 +81,6 @@ func unmarshalCryptoHash(serializedBytes []byte) []byte {
 			break
 		}
 	}
-	fmt.Printf("unmarshalCryptoHash = %x\n",unmarshalCryptoHash)
 	return unmarshalCryptoHash
 }
 

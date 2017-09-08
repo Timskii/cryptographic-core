@@ -38,10 +38,7 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slic
 
 
 	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
-	if e != nil {
-		fmt.Printf("File error: %v\n", e)
-		//os.Exit(1)
-	}else{
+	if e == nil {
 		fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
 		fileS = strings.Replace(fileS,"}{","},{",-1)
 

@@ -17,15 +17,18 @@ func checkDB() bool{
 }
 
 func readFile (fileName string){
-	fmt.Printf("readFile start\n")
 	file, e := ioutil.ReadFile(fileName)
 	if e != nil {
-		fmt.Printf("File error: %v\n", e)
+		fmt.Printf("Внимание, при чтении файла возникли ошибки: %v\n", e)
 		os.Exit(1)
 	}
 	var jsontype []*core.Jsonobject
 	json.Unmarshal(file, &jsontype)
-	core.AddData(jsontype)
+	if len(jsontype)>0 {
+		core.AddData(jsontype)
+	}else{
+		fmt.Printf("Внимание, неудалось прочитать транзакции!")
+	}
 }
 func createBlock(){
 	core.CreateNilBlock()
@@ -47,26 +50,41 @@ func main(){
 	if len(args) < 2{
 		fmt.Printf("Внимание, введите аргумент!")
 	}else {
-		if len(args) == 3 && strings.Compare(args[2],"debug") == 0{
-			logging.SetLevel(logging.DEBUG, "")
-		}else{
-			logging.SetLevel(logging.NOTICE, "")
+		for _, str := range args{
+			if strings.Compare(str,"debug")==0 {
+				logging.SetLevel(logging.DEBUG, "")
+				break
+			}else{logging.SetLevel(logging.NOTICE, "")}
 		}
+
 		method := args[1]
 		if strings.Compare(method, "i") == 0 {
-			fmt.Printf("Начата инициализация базы данных.")
+			fmt.Printf("Начата инициализация базы данных.\n")
 			createBlock()
 		} else if strings.Compare(method, "w") == 0 {
-			fmt.Printf("Начата запись блока.")
-			readFile("./" + os.Args[2])
+			if len(args) < 3{
+				fmt.Printf("Внимание, укажите файл с транзакциями!")
+			}else {
+				fmt.Printf("Начата запись блока.\n")
+				readFile("./" + args[2])
+			}
 		} else if strings.Compare(method, "r") == 0 {
-			fmt.Printf("Начато чтение транзакции.")
-			readTransaction(os.Args[2])
+			if len(args) < 3{
+				fmt.Printf("Внимание, укажите ID транзакции!")
+			}else {
+				fmt.Printf("Начато чтение транзакции.\n")
+				readTransaction(args[2])
+			}
 		} else if strings.Compare(method, "t") == 0 {
-			fmt.Printf("Начата проверка базы данных.")
+			fmt.Printf("Начата проверка базы данных.\n")
 			testBlock()
+		} else if strings.Compare(method,"h")==0 {
+				fmt.Printf("i - Инициализация базы данных\n"+
+									"w - Запись в блоки данных из файла\n"+
+									"r - Чтение транзакции для проверки\n"+
+									"t - Проверка базы данных\n")
 		} else {
-			fmt.Printf("Внимание, неправильный аргумент!")
+			fmt.Printf("Внимание, неправильный аргумент!\nДля получение справки запустите приложение с аргументом <h>.")
 		}
 	}
 }

@@ -60,6 +60,7 @@ func AddData (jsonobject []*Jsonobject){
 	}
 	if len(transactions)>0 {
 		ledger1.CommitTxBatch(blockchainSize, transactions, nil, nil)
+		fmt.Printf("Запись блока прошла успешно, %d транзакций обработано.", len(transactions))
 	}
 }
 
@@ -82,14 +83,15 @@ func createTransaction(args []string, chaincodeID string) (*protos.Transaction, 
 func CreateNilBlock(){
 	ledger1,_ := ledger.GetLedger()
 	if ledger1.GetBlockchainSize() != 0 {
-		panic("!Внимание!\nИнициализация блока уже прошла!")
-	}
-	if makeGenesisError := ledger1.BeginTxBatch(0); makeGenesisError == nil {
-		makeGenesisError := ledger1.CommitTxBatch(0, nil, nil, nil)
-		if makeGenesisError != nil {
-			fmt.Printf("Внимание! во время инициализации блока возникла ошибка: %+v\n", makeGenesisError)
-		}else{
-			fmt.Println("Инициализация базы данных прошла успешно!")
+		fmt.Printf("Внимание!\nИнициализация блока уже прошла!")
+	}else{
+		if makeGenesisError := ledger1.BeginTxBatch(0); makeGenesisError == nil {
+			makeGenesisError := ledger1.CommitTxBatch(0, nil, nil, nil)
+			if makeGenesisError != nil {
+				fmt.Printf("Внимание! во время инициализации блока возникла ошибка: %+v\n", makeGenesisError)
+			}else{
+				fmt.Println("Инициализация базы данных прошла успешно!")
+			}
 		}
 	}
 }
@@ -122,8 +124,8 @@ func ReadTransaction(idx string){
 			state, bucketKey = getState(args[0], args[i], chaincodeID, blockNumber)
 			hash=ut.ComputeCryptoHash(state)
 			hashDB = getHashFromDB(bucketKey, blockNumber)
-			fmt.Printf(	"Состояние %d   = %x\n"+
-							    "Хеш состояния = %x\n"+
+			fmt.Printf(	"\nСостояние %d   = %x\n"+
+								"Хеш состояния = %x\n"+
 								"Хеш из базы   = %x\n", i,state, hash, hashDB)
 			if bytes.Compare(hashDB , hash) !=0 {isValid = false}
 		}
