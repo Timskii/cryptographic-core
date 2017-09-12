@@ -17,14 +17,10 @@ limitations under the License.
 package db
 
 import (
-	"fmt"
 	"io"
 	"os"
-	"path"
-	"strings"
 
 	"github.com/op/go-logging"
-	"github.com/spf13/viper"
 	"github.com/tecbot/gorocksdb"
 	"bytes"
 )
@@ -67,15 +63,6 @@ func GetDBHandle() *OpenchainDB {
 	return openchainDB
 }
 
-// Start the db, init the openchainDB instance and open the db. Note this method has no guarantee correct behavior concurrent invocation.
-func Start() {
-	openchainDB.open()
-}
-
-// Stop the db. Note this method has no guarantee correct behavior concurrent invocation.
-func Stop() {
-	openchainDB.close()
-}
 
 // GetFromBlockchainCF get value for given key from column family - blockchainCF
 func (openchainDB *OpenchainDB) GetFromBlockchainCF(key []byte) ([]byte, error) {
@@ -142,46 +129,6 @@ func (openchainDB *OpenchainDB) GetStateDeltaCFIterator() *gorocksdb.Iterator {
 // when you are done with the snapshot.
 func (openchainDB *OpenchainDB) GetSnapshot() *gorocksdb.Snapshot {
 	return nil
-}
-
-func getDBPath() string {
-	dbPath := viper.GetString("peer.fileSystemPath")
-	if dbPath == "" {
-		panic("DB path not specified in configuration file. Please check that property 'peer.fileSystemPath' is set")
-	}
-	if !strings.HasSuffix(dbPath, "/") {
-		dbPath = dbPath + "/"
-	}
-	return dbPath + "db"
-}
-
-// Open open underlying rocksdb
-func (openchainDB *OpenchainDB) open() {
-	dbPath := getDBPath()
-	missing, err := dirMissingOrEmpty(dbPath)
-	if err != nil {
-		panic(fmt.Sprintf("Error while trying to open DB: %s", err))
-	}
-	dbLogger.Debugf("Is db path [%s] empty [%t]", dbPath, missing)
-
-	if missing {
-		err = os.MkdirAll(path.Dir(dbPath), 0755)
-		if err != nil {
-			panic(fmt.Sprintf("Error making directory path [%s]: %s", dbPath, err))
-		}
-	}
-
-	cfNames := []string{"default"}
-	cfNames = append(cfNames, columnfamilies...)
-
-	if err != nil {
-		panic(fmt.Sprintf("Error opening DB: %s", err))
-	}
-}
-
-// Close releases all column family handles and closes rocksdb
-func (openchainDB *OpenchainDB) close() {
-
 }
 
 // DeleteState delets ALL state keys/values from the DB. This is generally

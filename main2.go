@@ -13,11 +13,12 @@ import (
 
 func main(){
 	logging.SetLevel(logging.DEBUG, "")
-	//readFileTransfer()
+	readFileTransfer()
 	//core.CreateNilBlock()
 	//readFileRegister()
 	testBlocks()
 	//core.Checksum()
+	core.ReadTransaction("2e23b24a-69e1-4924-8f42-2f109ff0977b")
 }
 
 func readFileTransfer(){

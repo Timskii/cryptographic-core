@@ -17,15 +17,11 @@ limitations under the License.
 package ledger
 
 import (
-	"bytes"
 	"encoding/binary"
-	"strconv"
-
 	"github.com/hyperledger/fabric/core/db"
 	"github.com/hyperledger/fabric/core/util"
 	"github.com/hyperledger/fabric/protos"
 	"github.com/tecbot/gorocksdb"
-	"golang.org/x/net/context"
 )
 
 // Blockchain holds basic information in memory. Operations on Blockchain are not thread-safe
@@ -189,7 +185,7 @@ func (blockchain *blockchain) buildBlock(block *protos.Block, stateHash []byte) 
 	return block
 }
 
-func (blockchain *blockchain) addPersistenceChangesForNewBlock(ctx context.Context,
+func (blockchain *blockchain) addPersistenceChangesForNewBlock(
 	block *protos.Block, stateHash []byte, writeBatch *gorocksdb.WriteBatch) (uint64, error) {
 	block = blockchain.buildBlock(block, stateHash)
 	if block.NonHashData == nil {
@@ -318,7 +314,7 @@ func decodeToUint64(bytes []byte) uint64 {
 	return binary.BigEndian.Uint64(bytes)
 }
 
-func (blockchain *blockchain) String() string {
+/*func (blockchain *blockchain) String() string {
 	var buffer bytes.Buffer
 	size := blockchain.getSize()
 	for i := uint64(0); i < size; i++ {
@@ -336,3 +332,4 @@ func (blockchain *blockchain) String() string {
 	}
 	return buffer.String()
 }
+*/

@@ -186,7 +186,7 @@ func TestValidAllBlocks(){
 			previousBlock, _ := ledger.GetBlockByNumber(uint64(i - 1))
 			previousBlockHash, _ = previousBlock.GetHash()
 		}
-		if !bytes.Equal(previousBlockHash,block.PreviousBlockHash){
+		if block == nil || !bytes.Equal(previousBlockHash,block.PreviousBlockHash){
 			countErrBlocks++
 			fmt.Printf("E")
 		} else {

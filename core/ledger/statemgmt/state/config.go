@@ -19,8 +19,6 @@ package state
 import (
 	"fmt"
 	"sync"
-
-	//"github.com/spf13/viper"
 )
 
 var loadConfigOnce sync.Once

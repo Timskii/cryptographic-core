@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"encoding/json"
 
-	//"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/util"
 )
 

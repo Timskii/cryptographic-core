@@ -35,22 +35,12 @@ func (d *state) Clone() ShakeHash {
 	return d.clone()
 }
 
-// NewShake128 creates a new SHAKE128 variable-output-length ShakeHash.
-// Its generic security strength is 128 bits against all attacks if at
-// least 32 bytes of its output are used.
-func NewShake128() ShakeHash { return &state{rate: 168, dsbyte: 0x1f} }
-
 // NewShake256 creates a new SHAKE128 variable-output-length ShakeHash.
 // Its generic security strength is 256 bits against all attacks if
 // at least 64 bytes of its output are used.
 func NewShake256() ShakeHash { return &state{rate: 136, dsbyte: 0x1f} }
 
-// ShakeSum128 writes an arbitrary-length digest of data into hash.
-func ShakeSum128(hash, data []byte) {
-	h := NewShake128()
-	h.Write(data)
-	h.Read(hash)
-}
+
 
 // ShakeSum256 writes an arbitrary-length digest of data into hash.
 func ShakeSum256(hash, data []byte) {

@@ -67,25 +67,12 @@ func (iter *Iterator) SeekToFirst() {
 
 }
 
-// SeekToLast moves the iterator to the last key in the database.
-func (iter *Iterator) SeekToLast() {
-
-}
-
 // Seek moves the iterator to the position greater than or equal to the key.
 func (iter *Iterator) Seek(key []byte) {
 
 }
 
-// Err returns nil if no errors happened during iteration, or the actual
-// error otherwise.
-func (iter *Iterator) Err() error {
-
-	return nil
-}
-
 // Close closes the iterator.
 func (iter *Iterator) Close() {
-
 	iter = nil
 }

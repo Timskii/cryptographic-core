@@ -22,15 +22,6 @@ type ChaincodeEvent struct {
 	Payload     []byte `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
 }
 
-func (m *ChaincodeEvent) Reset()                    { *m = ChaincodeEvent{} }
-func (m *ChaincodeEvent) String() string            { return proto.CompactTextString(m) }
-func (*ChaincodeEvent) ProtoMessage()               {}
-func (*ChaincodeEvent) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
-
-func init() {
-	proto.RegisterType((*ChaincodeEvent)(nil), "protos.ChaincodeEvent")
-}
-
 func init() { proto.RegisterFile("chaincodeevent.proto", fileDescriptor1) }
 
 var fileDescriptor1 = []byte{

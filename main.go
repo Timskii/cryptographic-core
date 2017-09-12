@@ -59,7 +59,7 @@ func main(){
 
 		method := args[1]
 		if strings.Compare(method, "i") == 0 {
-			fmt.Printf("Начата инициализация базы данных.\n")
+			fmt.Printf("Начната инициализация базы даных.\n")
 			createBlock()
 		} else if strings.Compare(method, "w") == 0 {
 			if len(args) < 3{

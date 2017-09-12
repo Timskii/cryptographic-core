@@ -24,73 +24,6 @@ import (
 	"github.com/hyperledger/fabric/core/util"
 )
 
-// Bytes returns this transaction as an array of bytes.
-func (transaction *Transaction) Bytes() ([]byte, error) {
-	data, err := json.Marshal(transaction)
-	if err != nil {
-		logger.Errorf("Error marshalling transaction: %s", err)
-		return nil, fmt.Errorf("Could not marshal transaction: %s", err)
-	}
-	return data, nil
-}
-
-// NewTransaction creates a new transaction. It defines the function to call,
-// the chaincodeID on which the function should be called, and the arguments
-// string. The arguments could be a string of JSON, but there is no strict
-// requirement.
-func NewTransaction(chaincodeID ChaincodeID, uuid string, function string, arguments []string) (*Transaction, error) {
-	data, err := json.Marshal(&chaincodeID)
-	if err != nil {
-		return nil, fmt.Errorf("Could not marshal chaincode : %s", err)
-	}
-	transaction := new(Transaction)
-	transaction.ChaincodeID = data
-	transaction.Txid = uuid
-	transaction.Timestamp = util.CreateUtcTimestamp()
-	/*
-		// Build the spec
-		spec := &pb.ChaincodeSpec{Type: pb.ChaincodeSpec_GOLANG,
-			ChaincodeID: chaincodeID, ChaincodeInput: &pb.ChaincodeInput{Function: function, Args: arguments}}
-
-		// Build the ChaincodeInvocationSpec message
-		invocation := &pb.ChaincodeInvocationSpec{ChaincodeSpec: spec}
-
-		data, err := proto.Marshal(invocation)
-		if err != nil {
-			return nil, fmt.Errorf("Could not marshal payload for chaincode invocation: %s", err)
-		}
-		transaction.Payload = data
-	*/
-	return transaction, nil
-}
-
-// NewChaincodeDeployTransaction is used to deploy chaincode.
-func NewChaincodeDeployTransaction(chaincodeDeploymentSpec *ChaincodeDeploymentSpec, uuid string) (*Transaction, error) {
-	transaction := new(Transaction)
-	transaction.Type = Transaction_CHAINCODE_DEPLOY
-	transaction.Txid = uuid
-	transaction.Timestamp = util.CreateUtcTimestamp()
-	cID := chaincodeDeploymentSpec.ChaincodeSpec.GetChaincodeID()
-	if cID != nil {
-		data, err := json.Marshal(cID)
-		if err != nil {
-			return nil, fmt.Errorf("Could not marshal chaincode : %s", err)
-		}
-		transaction.ChaincodeID = data
-	}
-	//if chaincodeDeploymentSpec.ChaincodeSpec.GetCtorMsg() != nil {
-	//	transaction.Function = chaincodeDeploymentSpec.ChaincodeSpec.GetCtorMsg().Function
-	//	transaction.Args = chaincodeDeploymentSpec.ChaincodeSpec.GetCtorMsg().Args
-	//}
-	data, err := json.Marshal(chaincodeDeploymentSpec)
-	if err != nil {
-		logger.Errorf("Error mashalling payload for chaincode deployment: %s", err)
-		return nil, fmt.Errorf("Could not marshal payload for chaincode deployment: %s", err)
-	}
-	transaction.Payload = data
-	return transaction, nil
-}
-
 // NewChaincodeExecute is used to invoke chaincode.
 func NewChaincodeExecute(chaincodeInvocationSpec *ChaincodeInvocationSpec, uuid string, typ Transaction_Type) (*Transaction, error) {
 	transaction := new(Transaction)
@@ -116,20 +49,4 @@ func NewChaincodeExecute(chaincodeInvocationSpec *ChaincodeInvocationSpec, uuid 
 type strArgs struct {
 	Function string
 	Args     []string
-}
-
-// UnmarshalJSON converts the string-based REST/JSON input to
-// the []byte-based current ChaincodeInput structure.
-func (c *ChaincodeInput) UnmarshalJSON(b []byte) error {
-	sa := &strArgs{}
-	err := json.Unmarshal(b, sa)
-	if err != nil {
-		return err
-	}
-	allArgs := sa.Args
-	if sa.Function != "" {
-		allArgs = append([]string{sa.Function}, sa.Args...)
-	}
-	c.Args = util.ToChaincodeArgs(allArgs...)
-	return nil
 }

@@ -9,11 +9,6 @@ import fmt "fmt"
 import math "math"
 import google_protobuf "github.com/golang/protobuf/ptypes/timestamp"
 
-import (
-	context "golang.org/x/net/context"
-	grpc "google.golang.org/grpc"
-)
-
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
@@ -55,12 +50,6 @@ func (Transaction_Type) EnumDescriptor() ([]byte, []int) { return fileDescriptor
 
 type PeerEndpoint_Type int32
 
-const (
-	PeerEndpoint_UNDEFINED     PeerEndpoint_Type = 0
-	PeerEndpoint_VALIDATOR     PeerEndpoint_Type = 1
-	PeerEndpoint_NON_VALIDATOR PeerEndpoint_Type = 2
-)
-
 var PeerEndpoint_Type_name = map[int32]string{
 	0: "UNDEFINED",
 	1: "VALIDATOR",
@@ -78,25 +67,6 @@ func (x PeerEndpoint_Type) String() string {
 func (PeerEndpoint_Type) EnumDescriptor() ([]byte, []int) { return fileDescriptor5, []int{8, 0} }
 
 type Message_Type int32
-
-const (
-	Message_UNDEFINED               Message_Type = 0
-	Message_DISC_HELLO              Message_Type = 1
-	Message_DISC_DISCONNECT         Message_Type = 2
-	Message_DISC_GET_PEERS          Message_Type = 3
-	Message_DISC_PEERS              Message_Type = 4
-	Message_DISC_NEWMSG             Message_Type = 5
-	Message_CHAIN_TRANSACTION       Message_Type = 6
-	Message_SYNC_GET_BLOCKS         Message_Type = 11
-	Message_SYNC_BLOCKS             Message_Type = 12
-	Message_SYNC_BLOCK_ADDED        Message_Type = 13
-	Message_SYNC_STATE_GET_SNAPSHOT Message_Type = 14
-	Message_SYNC_STATE_SNAPSHOT     Message_Type = 15
-	Message_SYNC_STATE_GET_DELTAS   Message_Type = 16
-	Message_SYNC_STATE_DELTAS       Message_Type = 17
-	Message_RESPONSE                Message_Type = 20
-	Message_CONSENSUS               Message_Type = 21
-)
 
 var Message_Type_name = map[int32]string{
 	0:  "UNDEFINED",
@@ -185,11 +155,6 @@ type Transaction struct {
 	Signature                      []byte                     `protobuf:"bytes,12,opt,name=signature,proto3" json:"signature,omitempty"`
 }
 
-func (m *Transaction) Reset()                    { *m = Transaction{} }
-func (m *Transaction) String() string            { return proto.CompactTextString(m) }
-func (*Transaction) ProtoMessage()               {}
-func (*Transaction) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{0} }
-
 func (m *Transaction) GetTimestamp() *google_protobuf.Timestamp {
 	if m != nil {
 		return m.Timestamp
@@ -201,11 +166,6 @@ func (m *Transaction) GetTimestamp() *google_protobuf.Timestamp {
 type TransactionBlock struct {
 	Transactions []*Transaction `protobuf:"bytes,1,rep,name=transactions" json:"transactions,omitempty"`
 }
-
-func (m *TransactionBlock) Reset()                    { *m = TransactionBlock{} }
-func (m *TransactionBlock) String() string            { return proto.CompactTextString(m) }
-func (*TransactionBlock) ProtoMessage()               {}
-func (*TransactionBlock) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{1} }
 
 func (m *TransactionBlock) GetTransactions() []*Transaction {
 	if m != nil {
@@ -228,11 +188,6 @@ type TransactionResult struct {
 	Error          string          `protobuf:"bytes,4,opt,name=error" json:"error,omitempty"`
 	ChaincodeEvent *ChaincodeEvent `protobuf:"bytes,5,opt,name=chaincodeEvent" json:"chaincodeEvent,omitempty"`
 }
-
-func (m *TransactionResult) Reset()                    { *m = TransactionResult{} }
-func (m *TransactionResult) String() string            { return proto.CompactTextString(m) }
-func (*TransactionResult) ProtoMessage()               {}
-func (*TransactionResult) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{2} }
 
 func (m *TransactionResult) GetChaincodeEvent() *ChaincodeEvent {
 	if m != nil {
@@ -263,11 +218,6 @@ type Block struct {
 	NonHashData       *NonHashData               `protobuf:"bytes,7,opt,name=nonHashData" json:"nonHashData,omitempty"`
 }
 
-func (m *Block) Reset()                    { *m = Block{} }
-func (m *Block) String() string            { return proto.CompactTextString(m) }
-func (*Block) ProtoMessage()               {}
-func (*Block) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{3} }
-
 func (m *Block) GetTimestamp() *google_protobuf.Timestamp {
 	if m != nil {
 		return m.Timestamp
@@ -297,10 +247,6 @@ type BlockchainInfo struct {
 	PreviousBlockHash []byte `protobuf:"bytes,3,opt,name=previousBlockHash,proto3" json:"previousBlockHash,omitempty"`
 }
 
-func (m *BlockchainInfo) Reset()                    { *m = BlockchainInfo{} }
-func (m *BlockchainInfo) String() string            { return proto.CompactTextString(m) }
-func (*BlockchainInfo) ProtoMessage()               {}
-func (*BlockchainInfo) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{4} }
 
 // NonHashData is data that is recorded on the block, but not included in
 // the block hash when verifying the blockchain.
@@ -313,10 +259,6 @@ type NonHashData struct {
 	ChaincodeEvents            []*ChaincodeEvent          `protobuf:"bytes,2,rep,name=chaincodeEvents" json:"chaincodeEvents,omitempty"`
 }
 
-func (m *NonHashData) Reset()                    { *m = NonHashData{} }
-func (m *NonHashData) String() string            { return proto.CompactTextString(m) }
-func (*NonHashData) ProtoMessage()               {}
-func (*NonHashData) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{5} }
 
 func (m *NonHashData) GetLocalLedgerCommitTimestamp() *google_protobuf.Timestamp {
 	if m != nil {
@@ -337,19 +279,10 @@ type PeerAddress struct {
 	Port int32  `protobuf:"varint,2,opt,name=port" json:"port,omitempty"`
 }
 
-func (m *PeerAddress) Reset()                    { *m = PeerAddress{} }
-func (m *PeerAddress) String() string            { return proto.CompactTextString(m) }
-func (*PeerAddress) ProtoMessage()               {}
-func (*PeerAddress) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{6} }
 
 type PeerID struct {
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 }
-
-func (m *PeerID) Reset()                    { *m = PeerID{} }
-func (m *PeerID) String() string            { return proto.CompactTextString(m) }
-func (*PeerID) ProtoMessage()               {}
-func (*PeerID) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{7} }
 
 type PeerEndpoint struct {
 	ID      *PeerID           `protobuf:"bytes,1,opt,name=ID,json=iD" json:"ID,omitempty"`
@@ -357,11 +290,6 @@ type PeerEndpoint struct {
 	Type    PeerEndpoint_Type `protobuf:"varint,3,opt,name=type,enum=protos.PeerEndpoint_Type" json:"type,omitempty"`
 	PkiID   []byte            `protobuf:"bytes,4,opt,name=pkiID,proto3" json:"pkiID,omitempty"`
 }
-
-func (m *PeerEndpoint) Reset()                    { *m = PeerEndpoint{} }
-func (m *PeerEndpoint) String() string            { return proto.CompactTextString(m) }
-func (*PeerEndpoint) ProtoMessage()               {}
-func (*PeerEndpoint) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{8} }
 
 func (m *PeerEndpoint) GetID() *PeerID {
 	if m != nil {
@@ -374,11 +302,6 @@ type PeersMessage struct {
 	Peers []*PeerEndpoint `protobuf:"bytes,1,rep,name=peers" json:"peers,omitempty"`
 }
 
-func (m *PeersMessage) Reset()                    { *m = PeersMessage{} }
-func (m *PeersMessage) String() string            { return proto.CompactTextString(m) }
-func (*PeersMessage) ProtoMessage()               {}
-func (*PeersMessage) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{9} }
-
 func (m *PeersMessage) GetPeers() []*PeerEndpoint {
 	if m != nil {
 		return m.Peers
@@ -390,20 +313,10 @@ type PeersAddresses struct {
 	Addresses []string `protobuf:"bytes,1,rep,name=addresses" json:"addresses,omitempty"`
 }
 
-func (m *PeersAddresses) Reset()                    { *m = PeersAddresses{} }
-func (m *PeersAddresses) String() string            { return proto.CompactTextString(m) }
-func (*PeersAddresses) ProtoMessage()               {}
-func (*PeersAddresses) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{10} }
-
 type HelloMessage struct {
 	PeerEndpoint   *PeerEndpoint   `protobuf:"bytes,1,opt,name=peerEndpoint" json:"peerEndpoint,omitempty"`
 	BlockchainInfo *BlockchainInfo `protobuf:"bytes,2,opt,name=blockchainInfo" json:"blockchainInfo,omitempty"`
 }
-
-func (m *HelloMessage) Reset()                    { *m = HelloMessage{} }
-func (m *HelloMessage) String() string            { return proto.CompactTextString(m) }
-func (*HelloMessage) ProtoMessage()               {}
-func (*HelloMessage) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{11} }
 
 func (m *HelloMessage) GetPeerEndpoint() *PeerEndpoint {
 	if m != nil {
@@ -426,11 +339,6 @@ type Message struct {
 	Signature []byte                     `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
 }
 
-func (m *Message) Reset()                    { *m = Message{} }
-func (m *Message) String() string            { return proto.CompactTextString(m) }
-func (*Message) ProtoMessage()               {}
-func (*Message) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{12} }
-
 func (m *Message) GetTimestamp() *google_protobuf.Timestamp {
 	if m != nil {
 		return m.Timestamp
@@ -443,11 +351,6 @@ type Response struct {
 	Msg    []byte              `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
 }
 
-func (m *Response) Reset()                    { *m = Response{} }
-func (m *Response) String() string            { return proto.CompactTextString(m) }
-func (*Response) ProtoMessage()               {}
-func (*Response) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{13} }
-
 // BlockState is the payload of Message.SYNC_BLOCK_ADDED. When a VP
 // commits a new block to the ledger, it will notify its connected NVPs of the
 // block and the delta state. The NVP may call the ledger APIs to apply the
@@ -457,11 +360,6 @@ type BlockState struct {
 	Block      *Block `protobuf:"bytes,1,opt,name=block" json:"block,omitempty"`
 	StateDelta []byte `protobuf:"bytes,2,opt,name=stateDelta,proto3" json:"stateDelta,omitempty"`
 }
-
-func (m *BlockState) Reset()                    { *m = BlockState{} }
-func (m *BlockState) String() string            { return proto.CompactTextString(m) }
-func (*BlockState) ProtoMessage()               {}
-func (*BlockState) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{14} }
 
 func (m *BlockState) GetBlock() *Block {
 	if m != nil {
@@ -481,10 +379,6 @@ type SyncBlockRange struct {
 	End           uint64 `protobuf:"varint,3,opt,name=end" json:"end,omitempty"`
 }
 
-func (m *SyncBlockRange) Reset()                    { *m = SyncBlockRange{} }
-func (m *SyncBlockRange) String() string            { return proto.CompactTextString(m) }
-func (*SyncBlockRange) ProtoMessage()               {}
-func (*SyncBlockRange) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{15} }
 
 // SyncBlocks is the payload of Message.SYNC_BLOCKS, where the range
 // indicates the blocks responded to the request SYNC_GET_BLOCKS
@@ -493,10 +387,6 @@ type SyncBlocks struct {
 	Blocks []*Block        `protobuf:"bytes,2,rep,name=blocks" json:"blocks,omitempty"`
 }
 
-func (m *SyncBlocks) Reset()                    { *m = SyncBlocks{} }
-func (m *SyncBlocks) String() string            { return proto.CompactTextString(m) }
-func (*SyncBlocks) ProtoMessage()               {}
-func (*SyncBlocks) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{16} }
 
 func (m *SyncBlocks) GetRange() *SyncBlockRange {
 	if m != nil {
@@ -517,11 +407,6 @@ type SyncStateSnapshotRequest struct {
 	CorrelationId uint64 `protobuf:"varint,1,opt,name=correlationId" json:"correlationId,omitempty"`
 }
 
-func (m *SyncStateSnapshotRequest) Reset()                    { *m = SyncStateSnapshotRequest{} }
-func (m *SyncStateSnapshotRequest) String() string            { return proto.CompactTextString(m) }
-func (*SyncStateSnapshotRequest) ProtoMessage()               {}
-func (*SyncStateSnapshotRequest) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{17} }
-
 // SyncStateSnapshot is the payload of Message.SYNC_SNAPSHOT, which is a response
 // to penchainMessage.SYNC_GET_SNAPSHOT. It contains the snapshot or a chunk of the
 // snapshot on stream, and in which case, the sequence indicate the order
@@ -533,10 +418,6 @@ type SyncStateSnapshot struct {
 	Request     *SyncStateSnapshotRequest `protobuf:"bytes,4,opt,name=request" json:"request,omitempty"`
 }
 
-func (m *SyncStateSnapshot) Reset()                    { *m = SyncStateSnapshot{} }
-func (m *SyncStateSnapshot) String() string            { return proto.CompactTextString(m) }
-func (*SyncStateSnapshot) ProtoMessage()               {}
-func (*SyncStateSnapshot) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{18} }
 
 func (m *SyncStateSnapshot) GetRequest() *SyncStateSnapshotRequest {
 	if m != nil {
@@ -553,11 +434,6 @@ type SyncStateDeltasRequest struct {
 	Range *SyncBlockRange `protobuf:"bytes,1,opt,name=range" json:"range,omitempty"`
 }
 
-func (m *SyncStateDeltasRequest) Reset()                    { *m = SyncStateDeltasRequest{} }
-func (m *SyncStateDeltasRequest) String() string            { return proto.CompactTextString(m) }
-func (*SyncStateDeltasRequest) ProtoMessage()               {}
-func (*SyncStateDeltasRequest) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{19} }
-
 func (m *SyncStateDeltasRequest) GetRange() *SyncBlockRange {
 	if m != nil {
 		return m.Range
@@ -572,11 +448,6 @@ type SyncStateDeltas struct {
 	Deltas [][]byte        `protobuf:"bytes,2,rep,name=deltas,proto3" json:"deltas,omitempty"`
 }
 
-func (m *SyncStateDeltas) Reset()                    { *m = SyncStateDeltas{} }
-func (m *SyncStateDeltas) String() string            { return proto.CompactTextString(m) }
-func (*SyncStateDeltas) ProtoMessage()               {}
-func (*SyncStateDeltas) Descriptor() ([]byte, []int) { return fileDescriptor5, []int{20} }
-
 func (m *SyncStateDeltas) GetRange() *SyncBlockRange {
 	if m != nil {
 		return m.Range
@@ -585,27 +456,6 @@ func (m *SyncStateDeltas) GetRange() *SyncBlockRange {
 }
 
 func init() {
-	proto.RegisterType((*Transaction)(nil), "protos.Transaction")
-	proto.RegisterType((*TransactionBlock)(nil), "protos.TransactionBlock")
-	proto.RegisterType((*TransactionResult)(nil), "protos.TransactionResult")
-	proto.RegisterType((*Block)(nil), "protos.Block")
-	proto.RegisterType((*BlockchainInfo)(nil), "protos.BlockchainInfo")
-	proto.RegisterType((*NonHashData)(nil), "protos.NonHashData")
-	proto.RegisterType((*PeerAddress)(nil), "protos.PeerAddress")
-	proto.RegisterType((*PeerID)(nil), "protos.PeerID")
-	proto.RegisterType((*PeerEndpoint)(nil), "protos.PeerEndpoint")
-	proto.RegisterType((*PeersMessage)(nil), "protos.PeersMessage")
-	proto.RegisterType((*PeersAddresses)(nil), "protos.PeersAddresses")
-	proto.RegisterType((*HelloMessage)(nil), "protos.HelloMessage")
-	proto.RegisterType((*Message)(nil), "protos.Message")
-	proto.RegisterType((*Response)(nil), "protos.Response")
-	proto.RegisterType((*BlockState)(nil), "protos.BlockState")
-	proto.RegisterType((*SyncBlockRange)(nil), "protos.SyncBlockRange")
-	proto.RegisterType((*SyncBlocks)(nil), "protos.SyncBlocks")
-	proto.RegisterType((*SyncStateSnapshotRequest)(nil), "protos.SyncStateSnapshotRequest")
-	proto.RegisterType((*SyncStateSnapshot)(nil), "protos.SyncStateSnapshot")
-	proto.RegisterType((*SyncStateDeltasRequest)(nil), "protos.SyncStateDeltasRequest")
-	proto.RegisterType((*SyncStateDeltas)(nil), "protos.SyncStateDeltas")
 	proto.RegisterEnum("protos.Transaction_Type", Transaction_Type_name, Transaction_Type_value)
 	proto.RegisterEnum("protos.PeerEndpoint_Type", PeerEndpoint_Type_name, PeerEndpoint_Type_value)
 	proto.RegisterEnum("protos.Message_Type", Message_Type_name, Message_Type_value)
@@ -613,149 +463,6 @@ func init() {
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion3
-
-// Client API for Peer service
-
-type PeerClient interface {
-	// Accepts a stream of Message during chat session, while receiving
-	// other Message (e.g. from other peers).
-	Chat(ctx context.Context, opts ...grpc.CallOption) (Peer_ChatClient, error)
-	// Process a transaction from a remote source.
-	ProcessTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*Response, error)
-}
-
-type peerClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewPeerClient(cc *grpc.ClientConn) PeerClient {
-	return &peerClient{cc}
-}
-
-func (c *peerClient) Chat(ctx context.Context, opts ...grpc.CallOption) (Peer_ChatClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_Peer_serviceDesc.Streams[0], c.cc, "/protos.Peer/Chat", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &peerChatClient{stream}
-	return x, nil
-}
-
-type Peer_ChatClient interface {
-	Send(*Message) error
-	Recv() (*Message, error)
-	grpc.ClientStream
-}
-
-type peerChatClient struct {
-	grpc.ClientStream
-}
-
-func (x *peerChatClient) Send(m *Message) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *peerChatClient) Recv() (*Message, error) {
-	m := new(Message)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *peerClient) ProcessTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := grpc.Invoke(ctx, "/protos.Peer/ProcessTransaction", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Server API for Peer service
-
-type PeerServer interface {
-	// Accepts a stream of Message during chat session, while receiving
-	// other Message (e.g. from other peers).
-	Chat(Peer_ChatServer) error
-	// Process a transaction from a remote source.
-	ProcessTransaction(context.Context, *Transaction) (*Response, error)
-}
-
-func RegisterPeerServer(s *grpc.Server, srv PeerServer) {
-	s.RegisterService(&_Peer_serviceDesc, srv)
-}
-
-func _Peer_Chat_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(PeerServer).Chat(&peerChatServer{stream})
-}
-
-type Peer_ChatServer interface {
-	Send(*Message) error
-	Recv() (*Message, error)
-	grpc.ServerStream
-}
-
-type peerChatServer struct {
-	grpc.ServerStream
-}
-
-func (x *peerChatServer) Send(m *Message) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *peerChatServer) Recv() (*Message, error) {
-	m := new(Message)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func _Peer_ProcessTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Transaction)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PeerServer).ProcessTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protos.Peer/ProcessTransaction",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PeerServer).ProcessTransaction(ctx, req.(*Transaction))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Peer_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "protos.Peer",
-	HandlerType: (*PeerServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ProcessTransaction",
-			Handler:    _Peer_ProcessTransaction_Handler,
-		},
-	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Chat",
-			Handler:       _Peer_Chat_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: fileDescriptor5,
-}
-
 func init() { proto.RegisterFile("fabric.proto", fileDescriptor5) }
 
 var fileDescriptor5 = []byte{

@@ -35,7 +35,6 @@ package proto
 // TODO: message sets.
 
 import (
-	"encoding"
 	"errors"
 	"fmt"
 	"reflect"
@@ -82,14 +81,6 @@ type textParser struct {
 	backed       bool   // whether back() was called
 	offset, line int
 	cur          token
-}
-
-func newTextParser(s string) *textParser {
-	p := new(textParser)
-	p.s = s
-	p.line = 1
-	p.cur.line = 1
-	return p
 }
 
 func (p *textParser) errorf(format string, a ...interface{}) *ParseError {
@@ -871,21 +862,4 @@ func (p *textParser) readAny(v reflect.Value, props *Properties) error {
 		}
 	}
 	return p.errorf("invalid %v: %v", v.Type(), tok.value)
-}
-
-// UnmarshalText reads a protocol buffer in Text format. UnmarshalText resets pb
-// before starting to unmarshal, so any existing data in pb is always removed.
-// If a required field is not set and no other error occurs,
-// UnmarshalText returns *RequiredNotSetError.
-func UnmarshalText(s string, pb Message) error {
-	if um, ok := pb.(encoding.TextUnmarshaler); ok {
-		err := um.UnmarshalText([]byte(s))
-		return err
-	}
-	pb.Reset()
-	v := reflect.ValueOf(pb)
-	if pe := newTextParser(s).readStruct(v.Elem(), ""); pe != nil {
-		return pe
-	}
-	return nil
 }

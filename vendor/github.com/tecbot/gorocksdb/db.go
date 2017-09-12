@@ -36,8 +36,7 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slic
 		countNumber int
 	)
 
-
-	file, e := ioutil.ReadFile(/*"github.com/hyperledger/fabric/*/"db.txt")
+	file, e := ioutil.ReadFile("db.txt")
 	if e == nil {
 		fileS := "[" + strings.TrimRight(string(file),",\n") + "]"
 		fileS = strings.Replace(fileS,"}{","},{",-1)
@@ -46,10 +45,7 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slic
 		block := &protos.Block{}
 		json.Unmarshal([]byte(fileS), &jsontype)
 
-		/*fmt.Printf("\ngorocksdb/db GetCF key: %#v\n", key)
-		fmt.Printf("gorocksdb/db GetCF key: %x\n", key)*/
 		if blockNumber != 0 {
-			//fmt.Printf("gorocksdb/db blockNumber: %d\n", blockNumber)
 			for i := 0; i< len(jsontype);  i++ {
 				if bytes.Equal(key, jsontype[i].Key) {
 					countNumber++
@@ -77,7 +73,6 @@ func (db *DB) GetCF( cf *ColumnFamilyHandle, key []byte, blockNumber int) (*Slic
 			}
 		}
 	}
-	//fmt.Printf("gorocksdb/db GetCF cValLen: %s\ngorocksdb/db GetCF cValue = %x\n", cValLen,cValue)
 	return NewSlice(string(cValue), cValLen), nil
 }
 
