@@ -17,6 +17,7 @@ import (
 		"github.com/hyperledger/fabric/core/db"
 )
 
+//Функция для добавления данных из файла в базу данных
 func AddData (jsonobject []*Jsonobject){
 	var commited bool = false
 	var transactions []*protos.Transaction
@@ -64,6 +65,7 @@ func AddData (jsonobject []*Jsonobject){
 	}
 }
 
+// Функция для формирования транзакции
 func createTransaction(args []string, chaincodeID string) (*protos.Transaction, error) {
 	transaction, err := protos.NewChaincodeExecute(
 		&protos.ChaincodeInvocationSpec{
@@ -98,6 +100,7 @@ func CreateNilBlock(){
 
 const level  = 9
 
+// фнкция по проверке транзакции
 func ReadTransaction(idx string){
 	var payload Payload
 	var chaincodeID		ChaincodeID
@@ -139,6 +142,8 @@ func ReadTransaction(idx string){
 	}
 
 }
+
+//Функция по получению состояния
 func getState(nin string, user string,chaincodeID ChaincodeID, blockNumber int) ([]byte, *bucketKey){
 	key := util.GenerateKey(nin,user)
 	hashFunction := fnvHash
@@ -160,6 +165,7 @@ func getState(nin string, user string,chaincodeID ChaincodeID, blockNumber int) 
 	return state.hashingData,bucketKey
 }
 
+// Функция по получению хэша состояния из базы данных
 func getHashFromDB (bucketKey *bucketKey, blockNumber int) []byte{
 	openchainDB := db.GetDBHandle()
 	bucketKey.level = level-1
@@ -169,6 +175,7 @@ func getHashFromDB (bucketKey *bucketKey, blockNumber int) []byte{
 	return unmarshalCryptoHash(hashDB)
 }
 
+//Функция по проверке блоков в базе данных
 func TestValidAllBlocks(){
 	var previousBlockHash []byte
 	ledger,_ := ledger.GetLedger()
@@ -199,7 +206,7 @@ func TestValidAllBlocks(){
 		fmt.Printf("\nВсе %d блок(-ов) успешно прошли проверку на валидность.", size-1)
 	}
 }
-
+// Функция по проверке несанкционированного изменения программы
 func Checksum(){
 	fileData,_ := ioutil.ReadFile("main.exe")
 	hashFile := fileData[(len(fileData)-64):]

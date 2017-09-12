@@ -71,6 +71,7 @@ func computeBucketNumber (bucketNumber int) (int){
 	return BucketNumber
 }
 
+// функция декодирует данные из базыданных и восстанавливает данные о хэше
 func unmarshalCryptoHash(serializedBytes []byte) []byte {
 	var unmarshalCryptoHash []byte
 	buffer := proto.NewBuffer(serializedBytes)

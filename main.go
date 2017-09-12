@@ -9,6 +9,7 @@ import (
 	"github.com/op/go-logging"
 )
 
+//функция проверяет наличие файла с базой данных
 func checkDB() bool{
 	if file,_ := ioutil.ReadFile("db.txt"); file == nil{
 		fmt.Println("Не найден файл с данными!\nДля создания  файла с данными выполните приложение с аргументом <w> и файлом транзакции!")
@@ -16,6 +17,7 @@ func checkDB() bool{
 	}else{return true}
 }
 
+//функция по чтению файла во входящем параметра и записи его транзакции в базу данных
 func readFile (fileName string){
 	file, e := ioutil.ReadFile(fileName)
 	if e != nil {
@@ -30,22 +32,11 @@ func readFile (fileName string){
 		fmt.Printf("Внимание, неудалось прочитать транзакции!")
 	}
 }
-func createBlock(){
-	core.CreateNilBlock()
-}
-func readTransaction(id string){
-	if checkDB() {
-		core.ReadTransaction(id)
-	}
-}
-func testBlock(){
-	if checkDB() {
-		core.TestValidAllBlocks()
-	}
-}
 
 func main(){
+	//Проверка несанкционированного изменения программы
 	core.Checksum()
+
 	args := os.Args
 	if len(args) < 2{
 		fmt.Printf("Внимание, введите аргумент!\nДля получение справки запустите приложение с аргументом <h>.")
@@ -56,11 +47,10 @@ func main(){
 				break
 			}else{logging.SetLevel(logging.NOTICE, "")}
 		}
-
 		method := args[1]
 		if strings.Compare(method, "i") == 0 {
 			fmt.Printf("Начната инициализация базы даных.\n")
-			createBlock()
+			core.CreateNilBlock()
 		} else if strings.Compare(method, "w") == 0 {
 			if len(args) < 3{
 				fmt.Printf("Внимание, укажите файл с транзакциями!")
@@ -73,11 +63,15 @@ func main(){
 				fmt.Printf("Внимание, укажите ID транзакции!")
 			}else {
 				fmt.Printf("Начато чтение транзакции.\n")
-				readTransaction(args[2])
+				if checkDB() {
+					core.ReadTransaction(args[2])
+				}
 			}
 		} else if strings.Compare(method, "t") == 0 {
 			fmt.Printf("Начата проверка базы данных.\n")
-			testBlock()
+			if checkDB() {
+				core.TestValidAllBlocks()
+			}
 		} else if strings.Compare(method,"h")==0 {
 				fmt.Printf("Криптографическое ядро Hyperledger\n" +
 									"\nИспользование:\n" +
