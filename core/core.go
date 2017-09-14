@@ -208,7 +208,7 @@ func TestValidAllBlocks(){
 }
 // Функция по проверке несанкционированного изменения программы
 func Checksum(){
-	fileData,_ := ioutil.ReadFile("main.exe")
+	fileData,_ := ioutil.ReadFile("HLCK.exe")
 	hashFile := fileData[(len(fileData)-64):]
 	fileData = fileData[:(len(fileData)-64)]
 	hash := ut.ComputeCryptoHash(fileData)
