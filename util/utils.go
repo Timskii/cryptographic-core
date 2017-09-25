@@ -14,40 +14,37 @@ import (
 var logger = logging.MustGetLogger("utils.go")
 
 type BlockDb struct {
-	Height	uint64 			`json:"heigth"`
+	Height	uint64 			`json:"height"`
 	Block 	protos.Block 	`json:"block"`
-
 }
-var db_blocks string = "db_blocks.txt"
-/*
-func GetBlockhainSize() uint64{
-	var blockCount uint64 = 0
-	var blockDbs []BlockDb
 
-	dataCount, _ := ioutil.ReadFile(db_blocks)
-	if dataCount != nil {
-		fileS := "[" + strings.TrimRight(string(dataCount), ",\n") + "]"
-		json.Unmarshal([]byte(fileS), &blockDbs)
-		blockCount = uint64(len(blockDbs))
-	}
-	return blockCount
-}*/
+type DataJson struct {
+	Key 	[]byte
+	Value	[]byte
+}
+
+var db_blocks string = "db.txt"
 
 func GetBlockNumberByTransaction(idx string) int{
 	var blockNumber int = 0
-	var blockDbs []BlockDb
-	data, _ := ioutil.ReadFile(db_blocks)
+	var blockDbs []DataJson
+	data, err := ioutil.ReadFile(db_blocks)
+	if err != nil {
+		logger.Error("err = %v", err)
+	}
 	fileS := "[" + strings.TrimRight(string(data),",\n") + "]"
+	fileS = strings.Replace(fileS,"}{","},{",-1)
 	json.Unmarshal([]byte(fileS), &blockDbs)
-	for i,block := range blockDbs{
-		for _,transaction := range block.Block.Transactions {
-			if  strings.Compare(transaction.Txid,idx) ==0 {
-				blockNumber = i
-				break
-			}
+	for _,data := range blockDbs{
+		if strings.Contains(string(data.Key),idx){
+			logger.Debugf("data.Key = %v",data.Key)
+			break
+		}
+		if string(data.Key) == "blockCount"{
+			blockNumber++
 		}
 	}
-	return blockNumber
+	return blockNumber-1
 }
 
 
