@@ -38,7 +38,7 @@ func readFile (fileName string){
 func main(){
 	//Проверка несанкционированного изменения программы
 	core.Checksum()
-
+	logging.SetLevel(logging.NOTICE, "")
 	args := os.Args
 	if len(args) < 2{
 		fmt.Printf("Внимание, введите аргумент!\nДля получение справки запустите приложение с аргументом <h>.")
@@ -47,7 +47,7 @@ func main(){
 			if strings.Compare(str,"debug")==0 {
 				logging.SetLevel(logging.DEBUG, "")
 				break
-			}else{logging.SetLevel(logging.NOTICE, "")}
+			}
 		}
 		method := args[1]
 		if strings.Compare(method, "i") == 0 {
