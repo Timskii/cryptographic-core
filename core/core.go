@@ -27,7 +27,8 @@ func AddData (jsonobject []*Jsonobject){
 	ledger1,_ := ledger.GetLedger()
 	blockchainSize := ledger1.GetBlockchainSize()
 	if blockchainSize == 0 {
-		panic("!Внимание!\nНе прошла инициализация блока, запустите приложение с аргументом 'i'")
+		fmt.Println("Внимание, не прошла инициализация базы данных, запустите приложение с аргументом [i]")
+		return
 	}
 	ledger1.BeginTxBatch(blockchainSize)
 
@@ -37,7 +38,7 @@ func AddData (jsonobject []*Jsonobject){
 		chaincodeID := jsonobject[i].Params.ChaincodeID.Name
 		transaction,err := createTransaction(args,chaincodeID)
 		if err != nil {
-			fmt.Println("ошибка создания транзакции: ",err)
+			fmt.Println("Внимание, ошибка создания транзакции: ",err)
 		}else {
 			transactions = append(transactions,transaction)
 			ledger1.TxBegin(transactions[i].Txid)
@@ -85,12 +86,12 @@ func createTransaction(args []string, chaincodeID string) (*protos.Transaction, 
 func CreateNilBlock(){
 	ledger1,_ := ledger.GetLedger()
 	if ledger1.GetBlockchainSize() != 0 {
-		fmt.Printf("Внимание!\nИнициализация блока уже прошла!")
+		fmt.Printf("Внимание, инициализация базы данных уже прошла!")
 	}else{
 		if makeGenesisError := ledger1.BeginTxBatch(0); makeGenesisError == nil {
 			makeGenesisError := ledger1.CommitTxBatch(0, nil, nil, nil)
 			if makeGenesisError != nil {
-				fmt.Printf("Внимание! во время инициализации блока возникла ошибка: %+v\n", makeGenesisError)
+				fmt.Printf("Внимание! во время инициализации базы данных возникла ошибка: %+v\n", makeGenesisError)
 			}else{
 				fmt.Println("Инициализация базы данных прошла успешно!")
 			}

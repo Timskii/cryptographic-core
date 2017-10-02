@@ -14,7 +14,7 @@ var Version string
 //функция проверяет наличие файла с базой данных
 func checkDB() bool{
 	if file,_ := ioutil.ReadFile("db.txt"); file == nil{
-		fmt.Println("Не найден файл с данными!\nДля создания  файла с данными выполните приложение с аргументом <w> и файлом транзакции!")
+		fmt.Println("Не найден файл с данными!\nДля создания файла с данными выполните инициализацию базы данных.")
 		return false
 	}else{return true}
 }
@@ -31,7 +31,7 @@ func readFile (fileName string){
 	if len(jsontype)>0 {
 		core.AddData(jsontype)
 	}else{
-		fmt.Printf("Внимание, неудалось прочитать транзакции!")
+		fmt.Printf("Внимание, не удалось прочитать транзакции!")
 	}
 }
 
@@ -41,7 +41,7 @@ func main(){
 	logging.SetLevel(logging.NOTICE, "")
 	args := os.Args
 	if len(args) < 2{
-		fmt.Printf("Внимание, введите аргумент!\nДля получение справки запустите приложение с аргументом <h>.")
+		fmt.Printf("Внимание, введите аргумент!\nДля получение справки запустите приложение с аргументом [h].")
 	}else {
 		for _, str := range args{
 			if strings.Compare(str,"debug")==0 {
@@ -51,27 +51,29 @@ func main(){
 		}
 		method := args[1]
 		if strings.Compare(method, "i") == 0 {
-			fmt.Printf("Начната инициализация базы даных.\n")
+			fmt.Printf("Начната инициализация базы данных.\n")
 			core.CreateNilBlock()
 		} else if strings.Compare(method, "w") == 0 {
-			if len(args) < 3{
-				fmt.Printf("Внимание, укажите файл с транзакциями!")
-			}else {
-				fmt.Printf("Начата запись блока.\n")
-				readFile("./" + args[2])
+			if checkDB() {
+				if len(args) < 3{
+					fmt.Printf("Внимание, укажите файл с транзакциями!")
+				}else {
+					fmt.Printf("Начата запись блока.\n")
+					readFile("./" + args[2])
+				}
 			}
 		} else if strings.Compare(method, "r") == 0 {
-			if len(args) < 3{
-				fmt.Printf("Внимание, укажите ID транзакции!")
-			}else {
-				fmt.Printf("Начато чтение транзакции.\n")
-				if checkDB() {
+			if checkDB() {
+				if len(args) < 3 {
+					fmt.Printf("Внимание, укажите ID транзакции!")
+				} else {
+					fmt.Printf("Начато чтение транзакции.\n")
 					core.ReadTransaction(args[2])
 				}
 			}
 		} else if strings.Compare(method, "t") == 0 {
-			fmt.Printf("Начата проверка базы данных.\n")
 			if checkDB() {
+				fmt.Printf("Начата проверка базы данных.\n")
 				core.TestValidAllBlocks()
 			}
 		} else if strings.Compare(method,"h")==0 {
@@ -89,7 +91,7 @@ func main(){
 		} else if strings.Compare(method, "v") == 0{
 			fmt.Printf("Версия программы %v",Version)
 		} else {
-			fmt.Printf("Внимание, неправильный аргумент!\nДля получение справки запустите приложение с аргументом <h>.")
+			fmt.Printf("Внимание, неправильный аргумент!\nДля получение справки запустите приложение с аргументом [h].")
 		}
 	}
-}
+} 
